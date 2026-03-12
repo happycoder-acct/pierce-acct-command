@@ -559,6 +559,44 @@ textarea { resize: vertical; min-height: 70px; }
   </div>
 </div>
 
+
+<!-- ══════════ COURSE TASK MODAL ══════════ -->
+<div class="modal-overlay" id="courseTaskModal">
+  <div class="modal-box">
+    <div class="modal-title">&#128218; Create Task from Course</div>
+    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:10px 12px;margin-bottom:16px">
+      <div style="font-size:11px;color:var(--accent);font-weight:600" id="ctCode"></div>
+      <div style="font-size:12px;color:var(--text)" id="ctTitle"></div>
+      <div style="font-size:9px;color:var(--text3);margin-top:2px" id="ctLevel"></div>
+    </div>
+    <div class="form-row">
+      <label>Task Title</label>
+      <input type="text" id="ctTaskTitle">
+    </div>
+    <div class="form-row-2">
+      <div>
+        <label>Due Date</label>
+        <input type="text" id="ctDue" placeholder="YYYY-MM-DD">
+      </div>
+      <div>
+        <label>Stage</label>
+        <select id="ctStage"></select>
+      </div>
+    </div>
+    <div class="form-row">
+      <label>Pipeline Bucket</label>
+      <select id="ctBucket"></select>
+    </div>
+    <div class="form-row">
+      <label>Notes</label>
+      <textarea id="ctNotes" rows="2" placeholder="e.g. Curriculum draft needed, submit to faculty review..."></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-accent" onclick="saveCourseTask()">&#10003; Add to Timeline</button>
+      <button class="btn" onclick="closeModal('courseTaskModal')">Cancel</button>
+    </div>
+  </div>
+</div>
 <script>
 // ══════════════════════════════════════════════
 //  DATA LAYER
@@ -728,17 +766,30 @@ function renderTasks() {
   if (bucketF) tasks = tasks.filter(t => t.bucket === bucketF);
   tasks.sort((a,b) => (a.due||'9999') < (b.due||'9999') ? -1 : 1);
 
+  const now = new Date(); now.setHours(0,0,0,0);
+  const soon = new Date(now.getTime() + 30*24*60*60*1000);
+
+  const overdue  = tasks.filter(t => t.due && new Date(t.due) < now);
+  const comingDue = tasks.filter(t => t.due && new Date(t.due) >= now && new Date(t.due) <= soon);
+  const future   = tasks.filter(t => !t.due || new Date(t.due) > soon);
+
   const list = document.getElementById('taskList');
   if (!tasks.length) { list.innerHTML = '<div class="empty-state">No tasks. Hit + to add one.</div>'; return; }
-  list.innerHTML = tasks.map(t => {
+
+  function taskCard(t) {
     const stageName = STAGES[t.stage] || 'Unknown';
     const badgeCls = STAGE_BADGE(t.stage);
     const milestoneCls = t.milestone ? 'milestone' : '';
-    return `<div class="task-card ${milestoneCls}">
+    const dueDate = t.due ? new Date(t.due) : null;
+    const isOverdue = dueDate && dueDate < now;
+    const dueBadge = isOverdue
+      ? `<span style="color:var(--red);font-weight:600">⚠ OVERDUE ${t.due}</span>`
+      : (t.due ? `<span>📅 ${t.due}</span>` : '');
+    return `<div class="task-card ${milestoneCls}" style="${isOverdue ? 'border-left:3px solid var(--red)' : ''}">
       <div class="tc-left">
-        <div class="tc-title">${t.milestone?'🏁 ':''}${esc(t.title)}</div>
+        <div class="tc-title">${t.milestone ? '🏁 ' : ''}${esc(t.title)}</div>
         <div class="tc-meta">
-          ${t.due ? `<span>📅 ${t.due}</span>` : ''}
+          ${dueBadge}
           <span class="badge ${badgeCls}">${stageName}</span>
           ${t.bucket ? `<span class="badge">${esc(t.bucket)}</span>` : ''}
         </div>
@@ -748,7 +799,18 @@ function renderTasks() {
         <button class="btn btn-sm" onclick="openEditTask('${t.id}')">Edit</button>
       </div>
     </div>`;
-  }).join('');
+  }
+
+  function section(label, color, items) {
+    if (!items.length) return '';
+    return `<div style="font-size:9px;text-transform:uppercase;letter-spacing:.7px;color:${color};margin:14px 0 6px;padding-bottom:4px;border-bottom:1px solid ${color}44">${label} (${items.length})</div>`
+      + items.map(taskCard).join('');
+  }
+
+  list.innerHTML =
+    section('⚠ Overdue', 'var(--red)', overdue) +
+    section('🔔 Coming Due — Next 30 Days', 'var(--accent)', comingDue) +
+    section('📅 Upcoming', 'var(--text3)', future);
 }
 
 function renderDue() {
@@ -892,19 +954,25 @@ function renderBuckets() {
     if (bkt) grouped[bkt.id].contacts.push(c);
   });
 
-  container.innerHTML = Object.values(grouped).map(bkt => `
-    <div class="panel" style="margin-bottom:12px">
+  container.innerHTML = Object.values(grouped).map(bkt => {
+    const isInt = bkt.type === 'internal';
+    const color  = isInt ? 'var(--accent)'  : 'var(--accent2)';   // gold vs blue
+    const bg     = isInt ? '#c8a96e12'       : '#7b9ea812';
+    const border = isInt ? '#c8a96e44'       : '#7b9ea844';
+    const icon   = isInt ? '◈ Internal'  : '◉ External';
+    return `
+    <div class="panel" style="margin-bottom:12px;border-left:4px solid ${color};background:${bg}">
       <div class="bucket-header">
         <div>
-          <div class="bucket-title">${esc(bkt.name)}</div>
-          <div style="font-size:9px;color:var(--text3)">${bkt.type === 'internal' ? '◈ Internal' : '◉ External'} · ${bkt.contacts.length} contacts</div>
+          <div class="bucket-title" style="color:${color}">${esc(bkt.name)}</div>
+          <div style="font-size:9px;color:${color}99">${icon} · ${bkt.contacts.length} contacts</div>
         </div>
         <div class="flex-row">
           <button class="btn btn-sm btn-red" onclick="deleteBucket('${bkt.id}')">Remove Bucket</button>
         </div>
       </div>
       ${bkt.contacts.length ? bkt.contacts.map(c => `
-        <div class="contact-card">
+        <div class="contact-card" style="border-left:2px solid ${color}55">
           <div>
             <div class="cc-name">${esc(c.name)}</div>
             <div class="cc-org">${esc(c.org)} ${c.title ? '· '+esc(c.title) : ''}</div>
@@ -915,8 +983,43 @@ function renderBuckets() {
             <span class="cc-status status-${c.status}">${c.status}</span>
             <button class="btn btn-sm" onclick="deleteContact('${c.id}')">×</button>
           </div>
-        </div>`).join('') : '<div style="font-size:10px;color:var(--text3);padding:8px">No contacts in this bucket yet.</div>'}
-    </div>`).join('');
+        </div>`).join('')
+      : '<div style="font-size:10px;color:var(--text3);padding:8px">No contacts yet.</div>'}
+    </div>`;
+  }).join('');
+}
+
+function openCourseTask(code, title, credits, level) {
+  const modal = document.getElementById('courseTaskModal');
+  document.getElementById('ctCode').textContent = code;
+  document.getElementById('ctTitle').textContent = title + ' (' + credits + ' cr)';
+  document.getElementById('ctLevel').textContent = level === 'level-upper' ? 'Upper-Division (BAS 300-400)' : 'Lower-Division (AAS 100-200)';
+  document.getElementById('ctTaskTitle').value = 'Develop ' + code + ' — ' + title;
+  document.getElementById('ctNotes').value = '';
+  document.getElementById('ctDue').value = '';
+  populateStageSelect('ctStage', D.activeStage);
+  populateBucketSelect('ctBucket');
+  openModal('courseTaskModal');
+}
+
+function saveCourseTask() {
+  const title = document.getElementById('ctTaskTitle').value.trim();
+  if (!title) { alert('Title required'); return; }
+  D.tasks.push({
+    id: 't' + Date.now(),
+    title,
+    due: document.getElementById('ctDue').value.trim(),
+    stage: parseInt(document.getElementById('ctStage').value) || 0,
+    bucket: document.getElementById('ctBucket').value,
+    notes: document.getElementById('ctNotes').value.trim(),
+    milestone: false
+  });
+  saveLocal();
+  renderAll();
+  closeModal('courseTaskModal');
+  // Flash the timeline tab briefly to signal task was added
+  const tl = document.querySelector('.tab-btn');
+  if (tl) { tl.style.color = 'var(--green)'; setTimeout(() => tl.style.color = '', 1200); }
 }
 
 // FIX 1: openAddPL now calls populateBucketSelect
@@ -1003,195 +1106,149 @@ function deleteRoster(id) {
 //  PROGRAM MAP
 // ══════════════════════════════════════════════
 function renderMap() {
-  // ── Credential Stackability — Pierce College 2025-2026 Catalog (Actual Data) ──
-  const cols = [
-    {
-      label: 'Level 1',
-      sublabel: '33 cr',
-      creds: [{
-        name: 'Accounting Office Assistant Certificate',
-        credits: '33 cr',
-        catalogUrl: 'https://catalog.pierce.ctc.edu/preview_program.php?catoid=19&poid=7871',
-        proposed: false,
-        courses: [
-          'COLLG 110 – College Success (3 cr)',
-          'ACCT& 201 – Principles of Accounting I (5 cr)',
-          'ACCT& 202 – Principles of Accounting II (5 cr)',
-          'MATH& 107 – Math in Society OR MATH 147 Business Precalculus (5 cr)',
-          'ACCT 136 – Excel for Accounting (5 cr)',
-          'ACCT 275 – Payroll and Business Taxes (5 cr)',
-          'ACCT 131 – QuickBooks (5 cr)',
-        ]
-      }]
-    },
-    {
-      label: 'Level 2',
-      sublabel: '68 cr',
-      creds: [{
-        name: 'Bookkeeping Certificate',
-        credits: '68 cr',
-        catalogUrl: 'https://catalog.pierce.ctc.edu/preview_program.php?catoid=19&poid=7873',
-        proposed: false,
-        courses: [
-          'COLLG 110 – College Success (3 cr)',
-          'ACCT& 201 – Principles of Accounting I (5 cr)',
-          'ACCT& 202 – Principles of Accounting II (5 cr)',
-          'ACCT& 203 – Principles of Accounting III (5 cr)',
-          'ACCT 136 – Excel for Accounting (5 cr)',
-          'ACCT 179 – Federal Income Tax Preparation (5 cr)',
-          'MATH& 107 Math in Society OR MATH 147 (5 cr)',
-          'BUS 240 – Human Relations in the Workplace (5 cr)',
-          'BTECA 115 Business English I OR ENGL& 101 (5 cr)',
-          'ACCT 275 – Payroll and Business Taxes (5 cr)',
-          'ACCT 131 – QuickBooks (5 cr)',
-          'ACCT 276 – Nonprofit Management and Reporting (5 cr)',
-          'BTECA 114 – Intro to Windows & Microsoft Word (5 cr)',
-          'BTECA 180 – Microsoft Outlook (3 cr)',
-          'BTECA 136 – Ten-Key Mastery (1 cr)',
-          'ACCT 287 – Income Tax Practicum (3 cr)',
-        ]
-      }]
-    },
-    {
-      label: 'Level 3',
-      sublabel: '69 cr',
-      creds: [{
-        name: 'Accounting Technology Certificate',
-        credits: '69 cr',
-        catalogUrl: 'https://catalog.pierce.ctc.edu/preview_program.php?catoid=19&poid=7872',
-        proposed: false,
-        courses: [
-          'COLLG 110 – College Success (3 cr)',
-          'MATH& 107 Math in Society OR MATH 147 (5 cr)',
-          'ACCT 136 – Excel for Accounting (5 cr)',
-          'ACCT& 201 – Principles of Accounting I (5 cr)',
-          'ACCT& 202 – Principles of Accounting II (5 cr)',
-          'ACCT& 203 – Principles of Accounting III (5 cr)',
-          'BTECA 115 Business English I OR ENGL& 101 (5 cr)',
-          'ACCT 179 – Federal Income Tax Preparation (5 cr)',
-          'ACCT 131 – QuickBooks (5 cr)',
-          'ACCT 276 – Nonprofit Management and Reporting (5 cr)',
-          'ACCT 277 – Accounting Information Systems (5 cr)',
-          'ACCT 275 – Payroll and Business Taxes (5 cr)',
-          'BUS 240 – Human Relations in the Workplace (5 cr)',
-          'BTECA 114 – Intro to Windows & Microsoft Word (5 cr)',
-          'BTECA 136 – Ten-Key Mastery (1 cr)',
-        ]
-      }]
-    },
-    {
-      label: 'Level 4',
-      sublabel: '90 cr',
-      creds: [{
-        name: 'AAS – Applied Accounting',
-        credits: '90 cr',
-        catalogUrl: 'https://catalog.pierce.ctc.edu/preview_program.php?catoid=19&poid=7936',
-        proposed: false,
-        courses: [
-          'COLLG 110 – College Success (3 cr)',
-          'CMST& 101 Intro to Communication OR CMST& 220 (5 cr)',
-          'MATH& 107 Math in Society OR MATH 147 (5 cr)',
-          'ACCT& 201 – Principles of Accounting I (5 cr)',
-          'ACCT& 202 – Principles of Accounting II (5 cr)',
-          'ACCT& 203 – Principles of Accounting III (5 cr)',
-          'BTECA 115 Business English I OR ENGL& 101 (5 cr)',
-          'BUS& 201 – Business Law (5 cr)',
-          'BUS 240 – Human Relations in the Workplace (5 cr)',
-          'MNGT 186 – Professional Development (3 cr)',
-          'CIS 121 – Intro to Computer Information Systems (5 cr)',
-          'ACCT 136 – Excel for Accounting (5 cr)',
-          'ACCT 131 – QuickBooks (5 cr)',
-          'ACCT 179 – Federal Income Tax Preparation (5 cr)',
-          'ACCT 277 – Accounting Information Systems (5 cr)',
-          'ACCT 275 – Payroll and Business Taxes (5 cr)',
-          'ACCT 276 – Nonprofit Management and Reporting (5 cr)',
-          'BTECA 114 – Intro to Windows & Microsoft Word (5 cr)',
-          'BTECA 136 – Ten-Key Mastery (1 cr)',
-          'ACCT 287 Income Tax Practicum OR MNGT 298 Work Based Learning (3 cr)',
-        ]
-      }]
-    },
-    {
-      label: 'Level 5 (Proposed)',
-      sublabel: '90 cr upper-div',
-      creds: [{
-        name: 'BAS – Accounting (Proposed)',
-        credits: '90 cr upper-div',
-        proposed: true,
-        courses: [
-          'ACCT 301 – Intermediate Financial Accounting I (5 cr)',
-          'ACCT 302 – Intermediate Financial Accounting II (5 cr)',
-          'ACCT 310 – Advanced Taxation (5 cr)',
-          'ACCT 320 – Cost Accounting (5 cr)',
-          'ACCT 410 – Governmental & Nonprofit Acctg (5 cr)',
-          'ACCT 420 – Audit & Assurance Services (5 cr)',
-          'ACCT 450 – Advanced Accounting Topics (5 cr)',
-          'ACCT 490 – Capstone: Applied Analysis (5 cr)',
-          'General Education Electives (40 cr)',
-        ]
-      }]
-    },
+  const basCourses = [
+    { code:'ACCT 301', title:'Intermediate Financial Accounting I',   cr:5, prereq:'ACCT& 202' },
+    { code:'ACCT 302', title:'Intermediate Financial Accounting II',  cr:5, prereq:'ACCT 301' },
+    { code:'ACCT 310', title:'Advanced Taxation',                     cr:5, prereq:'ACCT& 201, ACCT 179' },
+    { code:'ACCT 320', title:'Cost Accounting',                       cr:5, prereq:'ACCT& 203' },
+    { code:'ACCT 330', title:'Fraud Examination & Forensic Acctg',    cr:5, prereq:'ACCT& 202' },
+    { code:'ACCT 340', title:'Advanced QuickBooks & Acctg Software',  cr:5, prereq:'ACCT 131, ACCT& 201' },
+    { code:'ACCT 350', title:'Business Analytics for Accountants',    cr:5, prereq:'ACCT 136, ACCT& 202' },
+    { code:'ACCT 360', title:'Accounting Ethics & Professionalism',   cr:3, prereq:'ACCT& 201' },
+    { code:'ACCT 410', title:'Governmental & Nonprofit Accounting',   cr:5, prereq:'ACCT& 203' },
+    { code:'ACCT 420', title:'Audit & Assurance Services',            cr:5, prereq:'ACCT 302' },
+    { code:'ACCT 430', title:'Advanced Managerial Accounting',        cr:5, prereq:'ACCT 320' },
+    { code:'ACCT 440', title:'Federal & State Tax Research',          cr:5, prereq:'ACCT 310' },
+    { code:'ACCT 450', title:'Advanced Accounting Topics',            cr:5, prereq:'ACCT 302, ACCT 320' },
+    { code:'ACCT 460', title:'International Accounting',              cr:5, prereq:'ACCT 302' },
+    { code:'ACCT 470', title:'Accounting Information Systems II',     cr:5, prereq:'ACCT 277' },
+    { code:'ACCT 480', title:'Work-Based Learning: Accounting',       cr:5, prereq:'Dept approval' },
+    { code:'ACCT 490', title:'Capstone: Applied Analysis',            cr:5, prereq:'45 upper-div ACCT cr' },
+    { code:'BUSA 301', title:'Managerial Economics',                  cr:5, prereq:'ECON& 201' },
+    { code:'BUSA 310', title:'Financial Management',                  cr:5, prereq:'ACCT& 202, MATH 147' },
+    { code:'BUSA 320', title:'Business Law: Contracts & Commerce',    cr:5, prereq:'BUS& 201' },
+  ];
+  const aasCourses = [
+    { code:'COLLG 110', title:'College Success',                     cr:3  },
+    { code:'ACCT& 201', title:'Principles of Accounting I',          cr:5  },
+    { code:'ACCT& 202', title:'Principles of Accounting II',         cr:5  },
+    { code:'ACCT& 203', title:'Principles of Accounting III',        cr:5  },
+    { code:'ACCT 131',  title:'QuickBooks',                          cr:5  },
+    { code:'ACCT 136',  title:'Excel for Accounting',                cr:5  },
+    { code:'ACCT 179',  title:'Federal Income Tax Preparation',      cr:5  },
+    { code:'ACCT 275',  title:'Payroll and Business Taxes',          cr:5  },
+    { code:'ACCT 276',  title:'Nonprofit Mgmt and Reporting',        cr:5  },
+    { code:'ACCT 277',  title:'Accounting Information Systems',      cr:5  },
+    { code:'ACCT 287',  title:'Income Tax Practicum',                cr:3  },
+    { code:'BUS& 201',  title:'Business Law',                        cr:5  },
+    { code:'BUS 240',   title:'Human Relations in the Workplace',    cr:5  },
+    { code:'CIS 121',   title:'Intro to Computer Info Systems',      cr:5  },
+    { code:'MNGT 186',  title:'Professional Development',            cr:3  },
+    { code:'CMST& 101', title:'Introduction to Communication',       cr:5  },
+    { code:'BTECA 114', title:'Intro to Windows & MS Word',          cr:5  },
+    { code:'BTECA 136', title:'Ten-Key Mastery',                     cr:1  },
+    { code:'ENGL& 101', title:'English Composition I',               cr:5  },
+    { code:'MATH 147',  title:'Business Precalculus',                cr:5  },
   ];
 
-  document.getElementById('stackMap').innerHTML = cols.map(col => `
-    <div class="stack-col" style="min-width:220px">
+  function courseCard(c, level) {
+    const isUpper = level === 'upper';
+    const color = isUpper ? 'var(--accent3)' : 'var(--accent2)';
+    const prereqLine = c.prereq ? `<div style="font-size:8px;color:var(--text3);margin-top:1px">Pre-req: ${c.prereq}</div>` : '';
+    return `<li
+      onclick="openCourseTask('${esc(c.code)}','${esc(c.title)}',${c.cr},'level-${isUpper?'upper':'lower'}')"
+      style="font-size:9px;color:var(--text2);padding:3px 5px;margin:2px 0;border-radius:3px;border:1px solid var(--border);background:var(--surface3);cursor:pointer;transition:background .12s;list-style:none"
+      onmouseover="this.style.background='var(--surface)';this.style.borderColor='${color}'"
+      onmouseout="this.style.background='var(--surface3)';this.style.borderColor='var(--border)'">
+      <span style="color:${color};font-weight:600">${c.code}</span><span style="color:var(--text3);font-size:8px"> · ${c.cr}cr</span><br>
+      ${c.title}${prereqLine}
+    </li>`;
+  }
+
+  const cols = [
+    { label:'Level 1', creds:[{ name:'Accounting Office Assistant Certificate', credits:'33 cr',
+        url:'https://catalog.pierce.ctc.edu/preview_program.php?catoid=19&poid=7871',
+        courses:[{code:'COLLG 110',title:'College Success',cr:3},{code:'ACCT& 201',title:'Principles of Accounting I',cr:5},
+          {code:'ACCT& 202',title:'Principles of Accounting II',cr:5},{code:'MATH& 107',title:'Math in Society',cr:5},
+          {code:'ACCT 136',title:'Excel for Accounting',cr:5},{code:'ACCT 275',title:'Payroll and Business Taxes',cr:5},
+          {code:'ACCT 131',title:'QuickBooks',cr:5}]}]},
+    { label:'Level 2', creds:[{ name:'Bookkeeping Certificate', credits:'68 cr',
+        url:'https://catalog.pierce.ctc.edu/preview_program.php?catoid=19&poid=7873',
+        courses:[{code:'COLLG 110',title:'College Success',cr:3},{code:'ACCT& 201',title:'Principles of Accounting I',cr:5},
+          {code:'ACCT& 202',title:'Principles of Accounting II',cr:5},{code:'ACCT& 203',title:'Principles of Accounting III',cr:5},
+          {code:'ACCT 136',title:'Excel for Accounting',cr:5},{code:'ACCT 179',title:'Federal Income Tax Prep',cr:5},
+          {code:'MATH& 107',title:'Math in Society',cr:5},{code:'BUS 240',title:'Human Relations',cr:5},
+          {code:'ENGL& 101',title:'English Composition I',cr:5},{code:'ACCT 275',title:'Payroll and Business Taxes',cr:5},
+          {code:'ACCT 131',title:'QuickBooks',cr:5},{code:'ACCT 276',title:'Nonprofit Mgmt & Reporting',cr:5},
+          {code:'BTECA 114',title:'Intro to Windows & MS Word',cr:5},{code:'BTECA 180',title:'Microsoft Outlook',cr:3},
+          {code:'BTECA 136',title:'Ten-Key Mastery',cr:1},{code:'ACCT 287',title:'Income Tax Practicum',cr:3}]}]},
+    { label:'Level 3', creds:[{ name:'Accounting Technology Certificate', credits:'69 cr',
+        url:'https://catalog.pierce.ctc.edu/preview_program.php?catoid=19&poid=7872',
+        courses:[{code:'COLLG 110',title:'College Success',cr:3},{code:'MATH& 107',title:'Math in Society',cr:5},
+          {code:'ACCT 136',title:'Excel for Accounting',cr:5},{code:'ACCT& 201',title:'Principles of Accounting I',cr:5},
+          {code:'ACCT& 202',title:'Principles of Accounting II',cr:5},{code:'ACCT& 203',title:'Principles of Accounting III',cr:5},
+          {code:'ENGL& 101',title:'English Composition I',cr:5},{code:'ACCT 179',title:'Federal Income Tax Prep',cr:5},
+          {code:'ACCT 131',title:'QuickBooks',cr:5},{code:'ACCT 276',title:'Nonprofit Mgmt & Reporting',cr:5},
+          {code:'ACCT 277',title:'Accounting Information Systems',cr:5},{code:'ACCT 275',title:'Payroll and Business Taxes',cr:5},
+          {code:'BUS 240',title:'Human Relations',cr:5},{code:'BTECA 114',title:'Intro to Windows & MS Word',cr:5},
+          {code:'BTECA 136',title:'Ten-Key Mastery',cr:1}]}]},
+    { label:'Level 4 — AAS', creds:[{ name:'AAS — Applied Accounting', credits:'90 cr',
+        url:'https://catalog.pierce.ctc.edu/preview_program.php?catoid=19&poid=7936',
+        courses:[{code:'COLLG 110',title:'College Success',cr:3},{code:'CMST& 101',title:'Intro to Communication',cr:5},
+          {code:'MATH& 107',title:'Math in Society',cr:5},{code:'ACCT& 201',title:'Principles of Accounting I',cr:5},
+          {code:'ACCT& 202',title:'Principles of Accounting II',cr:5},{code:'ACCT& 203',title:'Principles of Accounting III',cr:5},
+          {code:'ENGL& 101',title:'English Composition I',cr:5},{code:'BUS& 201',title:'Business Law',cr:5},
+          {code:'BUS 240',title:'Human Relations',cr:5},{code:'MNGT 186',title:'Professional Development',cr:3},
+          {code:'CIS 121',title:'Intro to Computer Info Systems',cr:5},{code:'ACCT 136',title:'Excel for Accounting',cr:5},
+          {code:'ACCT 131',title:'QuickBooks',cr:5},{code:'ACCT 179',title:'Federal Income Tax Prep',cr:5},
+          {code:'ACCT 277',title:'Accounting Information Systems',cr:5},{code:'ACCT 275',title:'Payroll and Business Taxes',cr:5},
+          {code:'ACCT 276',title:'Nonprofit Mgmt & Reporting',cr:5},{code:'BTECA 114',title:'Intro to Windows & MS Word',cr:5},
+          {code:'BTECA 136',title:'Ten-Key Mastery',cr:1},{code:'ACCT 287',title:'Income Tax Practicum/Work-Based Learning',cr:3}]}]},
+  ];
+
+  let mapHTML = cols.map(col => `
+    <div class="stack-col" style="min-width:200px">
       <div class="stack-col-title">${col.label}</div>
       ${col.creds.map(c => `
-        <div class="cred-block ${c.proposed ? 'proposed' : ''}" style="cursor:default">
+        <div class="cred-block" style="cursor:default">
           <div class="cb-name" style="font-weight:600;margin-bottom:2px">
-            ${c.catalogUrl ? `<a href="${c.catalogUrl}" target="_blank" style="color:inherit;text-decoration:underline dotted">${c.name}</a>` : c.name}
+            <a href="${c.url}" target="_blank" style="color:inherit;text-decoration:underline dotted">${c.name}</a>
           </div>
-          <div class="cb-credits" style="margin-bottom:8px;color:var(--accent);font-size:10px">${c.credits} &nbsp;${c.proposed ? '(pending approval)' : '• 2025-2026 Catalog'}</div>
-          <ul style="list-style:none;padding:0;margin:0">
-            ${c.courses.map(course => `
-              <li style="font-size:9px;color:var(--text2);padding:2px 0;border-bottom:1px solid var(--border)">${course}</li>
-            `).join('')}
-          </ul>
+          <div style="font-size:9px;color:var(--accent);margin-bottom:7px">${c.credits} • 2025-2026 Catalog</div>
+          <ul style="list-style:none;padding:0;margin:0">${c.courses.map(x => courseCard(x,'lower')).join('')}</ul>
         </div>
       `).join('')}
     </div>
   `).join('');
 
-  // ── Pre-Req / Course Reference for AAS-level ACCT courses ──
-  const courses = [
-    { code:'ACCT& 201', title:'Principles of Accounting I',      credits:5, prereq:'None – open enrollment',                       notes:'Core for all credentials; entry-level acctg',         isNew:false },
-    { code:'ACCT& 202', title:'Principles of Accounting II',     credits:5, prereq:'ACCT& 201',                                           notes:'Core for all credentials',                            isNew:false },
-    { code:'ACCT& 203', title:'Principles of Accounting III',    credits:5, prereq:'ACCT& 202',                                           notes:'Required for Acctg Tech Cert, Bookkeeping Cert & AAS', isNew:false },
-    { code:'ACCT 131',  title:'QuickBooks',                      credits:5, prereq:'None (ACCT& 201 recommended)',                        notes:'All credentials',                                     isNew:false },
-    { code:'ACCT 136',  title:'Excel for Accounting',            credits:5, prereq:'None (CIS 121 or basic computer skills recommended)', notes:'All credentials',                                     isNew:false },
-    { code:'ACCT 179',  title:'Federal Income Tax Preparation',  credits:5, prereq:'ACCT& 201 recommended',                              notes:'Bookkeeping Cert, Acctg Tech Cert & AAS',             isNew:false },
-    { code:'ACCT 275',  title:'Payroll and Business Taxes',      credits:5, prereq:'ACCT& 201 recommended',                              notes:'All credentials',                                     isNew:false },
-    { code:'ACCT 276',  title:'Nonprofit Mgmt and Reporting',    credits:5, prereq:'ACCT& 201 recommended',                              notes:'Bookkeeping Cert, Acctg Tech Cert & AAS',             isNew:false },
-    { code:'ACCT 277',  title:'Accounting Information Systems',  credits:5, prereq:'ACCT& 201 recommended',                              notes:'Acctg Tech Cert & AAS',                               isNew:false },
-    { code:'ACCT 287',  title:'Income Tax Practicum',            credits:3, prereq:'ACCT 179 (or concurrent)',                           notes:'Bookkeeping Cert & AAS (work-based learning option)',  isNew:false },
-    { code:'BUS& 201',  title:'Business Law',                    credits:5, prereq:'None',                                               notes:'AAS only',                                            isNew:false },
-    { code:'BUS 240',   title:'Human Relations in the Workplace',credits:5, prereq:'None',                                               notes:'Bookkeeping Cert, Acctg Tech Cert & AAS',             isNew:false },
-    { code:'CIS 121',   title:'Intro to Computer Info Systems',  credits:5, prereq:'None',                                               notes:'AAS only',                                            isNew:false },
-    { code:'MNGT 186',  title:'Professional Development',        credits:3, prereq:'None',                                               notes:'AAS only',                                            isNew:false },
-    { code:'BTECA 114', title:'Intro to Windows & MS Word',      credits:5, prereq:'None',                                               notes:'Bookkeeping Cert, Acctg Tech Cert & AAS',             isNew:false },
-    { code:'BTECA 136', title:'Ten-Key Mastery',                 credits:1, prereq:'None',                                               notes:'Bookkeeping Cert, Acctg Tech Cert & AAS',             isNew:false },
-    { code:'BTECA 180', title:'Microsoft Outlook',               credits:3, prereq:'None',                                               notes:'Bookkeeping Cert only',                               isNew:false },
-    { code:'COLLG 110', title:'College Success',                 credits:3, prereq:'None – all students',                           notes:'Required for all credentials; first quarter',         isNew:false },
-  ];
-
-  document.getElementById('courseGrid').innerHTML = `
-    <div style="grid-column:1/-1;margin-bottom:12px">
-      <div style="font-size:11px;color:var(--text2);background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:10px;line-height:1.6">
-        <strong style="color:var(--accent)">Course Pre-Req Reference</strong> &nbsp;—&nbsp;
-        Based on the <a href="https://catalog.pierce.ctc.edu" target="_blank" style="color:var(--accent2)">2025–2026 Pierce College Catalog</a>.
-        Courses apply across multiple credential levels as noted.
+  mapHTML += `
+    <div class="stack-col" style="min-width:240px;border-left:2px solid var(--accent3)">
+      <div class="stack-col-title" style="color:var(--accent3)">Level 5 — BAS (Proposed)</div>
+      <div class="cred-block proposed" style="cursor:default">
+        <div class="cb-name" style="font-weight:600;color:var(--accent3)">BAS — Accounting (Proposed)</div>
+        <div style="font-size:9px;color:var(--text3);margin-bottom:6px">90 upper-div cr • pending SBCTC approval</div>
+        <div style="font-size:9px;color:var(--text2);background:var(--surface3);border-radius:3px;padding:5px;margin-bottom:10px;border:1px solid var(--accent3)44">
+          ↑ Directly stackable from AAS — all AAS credits count toward BAS
+        </div>
+        <div style="font-size:9px;color:var(--accent2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px">
+          Lower-Division (100–200) — from AAS
+        </div>
+        <ul style="list-style:none;padding:0;margin:0 0 10px 0">${aasCourses.map(c => courseCard(c,'lower')).join('')}</ul>
+        <div style="font-size:9px;color:var(--accent3);text-transform:uppercase;letter-spacing:.5px;margin:8px 0 5px;border-top:1px solid var(--accent3)44;padding-top:8px">
+          Upper-Division (300–400) — BAS Only
+        </div>
+        <ul style="list-style:none;padding:0;margin:0">${basCourses.map(c => courseCard(c,'upper')).join('')}</ul>
       </div>
     </div>
-    ${courses.map(c => `
-      <div class="panel" style="margin-bottom:0">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px">
-          <div style="font-size:10px;color:var(--accent2);font-weight:600">${c.code} · ${c.credits} cr</div>
-        </div>
-        <div style="font-size:12px;color:var(--text);margin-bottom:5px">${c.title}</div>
-        <div style="font-size:10px;color:var(--text3)"><strong style="color:var(--accent)">Pre-req:</strong> ${c.prereq}</div>
-        <div style="font-size:9px;color:var(--text3);margin-top:3px;font-style:italic">${c.notes}</div>
-      </div>
-    `).join('')}
+  `;
+
+  document.getElementById('stackMap').innerHTML = mapHTML;
+  document.getElementById('courseGrid').innerHTML = `
+    <div style="grid-column:1/-1;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:12px;font-size:11px;color:var(--text2)">
+      <strong style="color:var(--accent)">Click any course</strong> in the map to create a linked task on the Timeline.
+      &nbsp;•&nbsp;<span style="color:var(--accent2)">Blue</span> = AAS lower-div (100–200)
+      &nbsp;•&nbsp;<span style="color:var(--accent3)">Purple</span> = BAS upper-div (300–400)
+    </div>
   `;
 }
 
