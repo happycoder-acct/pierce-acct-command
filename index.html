@@ -1003,90 +1003,119 @@ function deleteRoster(id) {
 //  PROGRAM MAP
 // ══════════════════════════════════════════════
 function renderMap() {
-  // ── Credential Stackability with expanded course lists ──
+  // ── Credential Stackability — Pierce College 2025-2026 Catalog (Actual Data) ──
   const cols = [
     {
       label: 'Level 1',
+      sublabel: '33 cr',
       creds: [{
-        name: 'Office Assistant Certificate',
-        credits: '21 cr',
+        name: 'Accounting Office Assistant Certificate',
+        credits: '33 cr',
+        catalogUrl: 'https://catalog.pierce.ctc.edu/preview_program.php?catoid=19&poid=7871',
         proposed: false,
         courses: [
-          'ACCT 110 – Bookkeeping Fundamentals (5 cr)',
-          'BUSA 101 – Introduction to Business (5 cr)',
-          'OFAD 110 – Business Keyboarding (3 cr)',
-          'OFAD 120 – Office Procedures (5 cr)',
-          'OFAD 130 – Business Communications (3 cr)',
+          'COLLG 110 – College Success (3 cr)',
+          'ACCT& 201 – Principles of Accounting I (5 cr)',
+          'ACCT& 202 – Principles of Accounting II (5 cr)',
+          'MATH& 107 – Math in Society OR MATH 147 Business Precalculus (5 cr)',
+          'ACCT 136 – Excel for Accounting (5 cr)',
+          'ACCT 275 – Payroll and Business Taxes (5 cr)',
+          'ACCT 131 – QuickBooks (5 cr)',
         ]
       }]
     },
     {
       label: 'Level 2',
+      sublabel: '68 cr',
       creds: [{
         name: 'Bookkeeping Certificate',
-        credits: '32 cr',
+        credits: '68 cr',
+        catalogUrl: 'https://catalog.pierce.ctc.edu/preview_program.php?catoid=19&poid=7873',
         proposed: false,
         courses: [
-          'ACCT 110 – Bookkeeping Fundamentals (5 cr)',
-          'ACCT 111 – Computerized Bookkeeping (5 cr)',
-          'ACCT 112 – Payroll Accounting (5 cr)',
-          'ACCT 113 – Income Tax Preparation (5 cr)',
-          'BUSA 101 – Introduction to Business (5 cr)',
-          'BUSA 201 – Business Law (5 cr)',
-          'OFAD 130 – Business Communications (2 cr)',
+          'COLLG 110 – College Success (3 cr)',
+          'ACCT& 201 – Principles of Accounting I (5 cr)',
+          'ACCT& 202 – Principles of Accounting II (5 cr)',
+          'ACCT& 203 – Principles of Accounting III (5 cr)',
+          'ACCT 136 – Excel for Accounting (5 cr)',
+          'ACCT 179 – Federal Income Tax Preparation (5 cr)',
+          'MATH& 107 Math in Society OR MATH 147 (5 cr)',
+          'BUS 240 – Human Relations in the Workplace (5 cr)',
+          'BTECA 115 Business English I OR ENGL& 101 (5 cr)',
+          'ACCT 275 – Payroll and Business Taxes (5 cr)',
+          'ACCT 131 – QuickBooks (5 cr)',
+          'ACCT 276 – Nonprofit Management and Reporting (5 cr)',
+          'BTECA 114 – Intro to Windows & Microsoft Word (5 cr)',
+          'BTECA 180 – Microsoft Outlook (3 cr)',
+          'BTECA 136 – Ten-Key Mastery (1 cr)',
+          'ACCT 287 – Income Tax Practicum (3 cr)',
         ]
       }]
     },
     {
       label: 'Level 3',
+      sublabel: '69 cr',
       creds: [{
-        name: 'Accounting Tech Certificate',
-        credits: '48 cr',
+        name: 'Accounting Technology Certificate',
+        credits: '69 cr',
+        catalogUrl: 'https://catalog.pierce.ctc.edu/preview_program.php?catoid=19&poid=7872',
         proposed: false,
         courses: [
-          'ACCT 110 – Bookkeeping Fundamentals (5 cr)',
-          'ACCT 111 – Computerized Bookkeeping (5 cr)',
-          'ACCT 112 – Payroll Accounting (5 cr)',
-          'ACCT 113 – Income Tax Preparation (5 cr)',
-          'ACCT 201 – Financial Accounting I (5 cr)',
-          'ACCT 202 – Financial Accounting II (5 cr)',
-          'ACCT 203 – Managerial Accounting (5 cr)',
-          'BUSA 101 – Introduction to Business (5 cr)',
-          'BUSA 201 – Business Law (5 cr)',
-          'CIS 100 – Introduction to Computers (3 cr)',
+          'COLLG 110 – College Success (3 cr)',
+          'MATH& 107 Math in Society OR MATH 147 (5 cr)',
+          'ACCT 136 – Excel for Accounting (5 cr)',
+          'ACCT& 201 – Principles of Accounting I (5 cr)',
+          'ACCT& 202 – Principles of Accounting II (5 cr)',
+          'ACCT& 203 – Principles of Accounting III (5 cr)',
+          'BTECA 115 Business English I OR ENGL& 101 (5 cr)',
+          'ACCT 179 – Federal Income Tax Preparation (5 cr)',
+          'ACCT 131 – QuickBooks (5 cr)',
+          'ACCT 276 – Nonprofit Management and Reporting (5 cr)',
+          'ACCT 277 – Accounting Information Systems (5 cr)',
+          'ACCT 275 – Payroll and Business Taxes (5 cr)',
+          'BUS 240 – Human Relations in the Workplace (5 cr)',
+          'BTECA 114 – Intro to Windows & Microsoft Word (5 cr)',
+          'BTECA 136 – Ten-Key Mastery (1 cr)',
         ]
       }]
     },
     {
       label: 'Level 4',
+      sublabel: '90 cr',
       creds: [{
-        name: 'AAS in Accounting',
+        name: 'AAS – Applied Accounting',
         credits: '90 cr',
+        catalogUrl: 'https://catalog.pierce.ctc.edu/preview_program.php?catoid=19&poid=7936',
         proposed: false,
-        note: '✓ Updated for Fall 2007',
         courses: [
-          'ENGL 101 – English Composition (5 cr)',
-          'MATH 107 – Business Mathematics (5 cr)',
-          'CMST 220 – Business Communication (5 cr)',
-          'ACCT 110 – Bookkeeping Fundamentals (5 cr)',
-          'ACCT 111 – Computerized Bookkeeping (5 cr)',
-          'ACCT 112 – Payroll Accounting (5 cr)',
-          'ACCT 113 – Income Tax Preparation (5 cr)',
-          'ACCT 201 – Financial Accounting I (5 cr) · Pre-req: ACCT 110',
-          'ACCT 202 – Financial Accounting II (5 cr) · Pre-req: ACCT 201',
-          'ACCT 203 – Managerial Accounting (5 cr) · Pre-req: ACCT 201',
-          'BUSA 101 – Introduction to Business (5 cr)',
-          'BUSA 201 – Business Law (5 cr)',
-          'CIS 100 – Introduction to Computers (3 cr)',
-          'ECON 201 – Principles of Economics I (5 cr)',
-          'Electives (17 cr)',
+          'COLLG 110 – College Success (3 cr)',
+          'CMST& 101 Intro to Communication OR CMST& 220 (5 cr)',
+          'MATH& 107 Math in Society OR MATH 147 (5 cr)',
+          'ACCT& 201 – Principles of Accounting I (5 cr)',
+          'ACCT& 202 – Principles of Accounting II (5 cr)',
+          'ACCT& 203 – Principles of Accounting III (5 cr)',
+          'BTECA 115 Business English I OR ENGL& 101 (5 cr)',
+          'BUS& 201 – Business Law (5 cr)',
+          'BUS 240 – Human Relations in the Workplace (5 cr)',
+          'MNGT 186 – Professional Development (3 cr)',
+          'CIS 121 – Intro to Computer Information Systems (5 cr)',
+          'ACCT 136 – Excel for Accounting (5 cr)',
+          'ACCT 131 – QuickBooks (5 cr)',
+          'ACCT 179 – Federal Income Tax Preparation (5 cr)',
+          'ACCT 277 – Accounting Information Systems (5 cr)',
+          'ACCT 275 – Payroll and Business Taxes (5 cr)',
+          'ACCT 276 – Nonprofit Management and Reporting (5 cr)',
+          'BTECA 114 – Intro to Windows & Microsoft Word (5 cr)',
+          'BTECA 136 – Ten-Key Mastery (1 cr)',
+          'ACCT 287 Income Tax Practicum OR MNGT 298 Work Based Learning (3 cr)',
         ]
       }]
     },
     {
       label: 'Level 5 (Proposed)',
+      sublabel: '90 cr upper-div',
       creds: [{
-        name: 'BAS in Accounting',
+        name: 'BAS – Accounting (Proposed)',
         credits: '90 cr upper-div',
         proposed: true,
         courses: [
@@ -1105,13 +1134,14 @@ function renderMap() {
   ];
 
   document.getElementById('stackMap').innerHTML = cols.map(col => `
-    <div class="stack-col" style="min-width:210px">
+    <div class="stack-col" style="min-width:220px">
       <div class="stack-col-title">${col.label}</div>
       ${col.creds.map(c => `
         <div class="cred-block ${c.proposed ? 'proposed' : ''}" style="cursor:default">
-          <div class="cb-name" style="font-weight:600;margin-bottom:4px">${c.name}</div>
-          <div class="cb-credits" style="margin-bottom:6px;color:var(--accent)">${c.credits}</div>
-          ${c.note ? `<div style="font-size:9px;color:var(--green);margin-bottom:6px">${c.note}</div>` : ''}
+          <div class="cb-name" style="font-weight:600;margin-bottom:2px">
+            ${c.catalogUrl ? `<a href="${c.catalogUrl}" target="_blank" style="color:inherit;text-decoration:underline dotted">${c.name}</a>` : c.name}
+          </div>
+          <div class="cb-credits" style="margin-bottom:8px;color:var(--accent);font-size:10px">${c.credits} &nbsp;${c.proposed ? '(pending approval)' : '• 2025-2026 Catalog'}</div>
           <ul style="list-style:none;padding:0;margin:0">
             ${c.courses.map(course => `
               <li style="font-size:9px;color:var(--text2);padding:2px 0;border-bottom:1px solid var(--border)">${course}</li>
@@ -1122,41 +1152,44 @@ function renderMap() {
     </div>
   `).join('');
 
-  // ── Pre-Req Info for ACCT classes (updated Fall 2007) ──
+  // ── Pre-Req / Course Reference for AAS-level ACCT courses ──
   const courses = [
-    { code:'ACCT 110', title:'Bookkeeping Fundamentals',         credits:5, prereq:'None',                                    notes:'Entry-level; open to all students',                        isNew:false },
-    { code:'ACCT 111', title:'Computerized Bookkeeping',         credits:5, prereq:'ACCT 110 (or concurrent)',                 notes:'Uses QuickBooks; may be taken concurrently with ACCT 110', isNew:false },
-    { code:'ACCT 112', title:'Payroll Accounting',               credits:5, prereq:'ACCT 110',                                 notes:'Must complete ACCT 110 first',                             isNew:false },
-    { code:'ACCT 113', title:'Income Tax Preparation',           credits:5, prereq:'ACCT 110',                                 notes:'Must complete ACCT 110 first',                             isNew:false },
-    { code:'ACCT 201', title:'Financial Accounting I',           credits:5, prereq:'ACCT 110 or instructor permission',        notes:'New pre-req effective Fall 2007',                          isNew:true  },
-    { code:'ACCT 202', title:'Financial Accounting II',          credits:5, prereq:'ACCT 201',                                 notes:'New pre-req effective Fall 2007',                          isNew:true  },
-    { code:'ACCT 203', title:'Managerial Accounting',            credits:5, prereq:'ACCT 201',                                 notes:'New pre-req effective Fall 2007',                          isNew:true  },
-    { code:'ACCT 301', title:'Intermediate Financial Acctg I',   credits:5, prereq:'ACCT 202 with grade ≥ C',            notes:'BAS upper-div; grade minimum required',                   isNew:false },
-    { code:'ACCT 302', title:'Intermediate Financial Acctg II',  credits:5, prereq:'ACCT 301 with grade ≥ C',            notes:'BAS upper-div',                                           isNew:false },
-    { code:'ACCT 310', title:'Advanced Taxation',                credits:5, prereq:'ACCT 201 and ACCT 113',                   notes:'BAS upper-div',                                           isNew:false },
-    { code:'ACCT 320', title:'Cost Accounting',                  credits:5, prereq:'ACCT 203',                                 notes:'BAS upper-div',                                           isNew:false },
-    { code:'ACCT 410', title:'Governmental & Nonprofit Acctg',   credits:5, prereq:'ACCT 301',                                 notes:'BAS upper-div',                                           isNew:false },
-    { code:'ACCT 420', title:'Audit & Assurance Services',       credits:5, prereq:'ACCT 302',                                 notes:'BAS upper-div',                                           isNew:false },
-    { code:'ACCT 450', title:'Advanced Accounting Topics',       credits:5, prereq:'ACCT 302 and ACCT 320',                   notes:'BAS upper-div',                                           isNew:false },
-    { code:'ACCT 490', title:'Capstone: Applied Analysis',       credits:5, prereq:'Completion of 20 upper-div ACCT credits', notes:'Final quarter; taken last',                               isNew:false },
+    { code:'ACCT& 201', title:'Principles of Accounting I',      credits:5, prereq:'None – open enrollment',                       notes:'Core for all credentials; entry-level acctg',         isNew:false },
+    { code:'ACCT& 202', title:'Principles of Accounting II',     credits:5, prereq:'ACCT& 201',                                           notes:'Core for all credentials',                            isNew:false },
+    { code:'ACCT& 203', title:'Principles of Accounting III',    credits:5, prereq:'ACCT& 202',                                           notes:'Required for Acctg Tech Cert, Bookkeeping Cert & AAS', isNew:false },
+    { code:'ACCT 131',  title:'QuickBooks',                      credits:5, prereq:'None (ACCT& 201 recommended)',                        notes:'All credentials',                                     isNew:false },
+    { code:'ACCT 136',  title:'Excel for Accounting',            credits:5, prereq:'None (CIS 121 or basic computer skills recommended)', notes:'All credentials',                                     isNew:false },
+    { code:'ACCT 179',  title:'Federal Income Tax Preparation',  credits:5, prereq:'ACCT& 201 recommended',                              notes:'Bookkeeping Cert, Acctg Tech Cert & AAS',             isNew:false },
+    { code:'ACCT 275',  title:'Payroll and Business Taxes',      credits:5, prereq:'ACCT& 201 recommended',                              notes:'All credentials',                                     isNew:false },
+    { code:'ACCT 276',  title:'Nonprofit Mgmt and Reporting',    credits:5, prereq:'ACCT& 201 recommended',                              notes:'Bookkeeping Cert, Acctg Tech Cert & AAS',             isNew:false },
+    { code:'ACCT 277',  title:'Accounting Information Systems',  credits:5, prereq:'ACCT& 201 recommended',                              notes:'Acctg Tech Cert & AAS',                               isNew:false },
+    { code:'ACCT 287',  title:'Income Tax Practicum',            credits:3, prereq:'ACCT 179 (or concurrent)',                           notes:'Bookkeeping Cert & AAS (work-based learning option)',  isNew:false },
+    { code:'BUS& 201',  title:'Business Law',                    credits:5, prereq:'None',                                               notes:'AAS only',                                            isNew:false },
+    { code:'BUS 240',   title:'Human Relations in the Workplace',credits:5, prereq:'None',                                               notes:'Bookkeeping Cert, Acctg Tech Cert & AAS',             isNew:false },
+    { code:'CIS 121',   title:'Intro to Computer Info Systems',  credits:5, prereq:'None',                                               notes:'AAS only',                                            isNew:false },
+    { code:'MNGT 186',  title:'Professional Development',        credits:3, prereq:'None',                                               notes:'AAS only',                                            isNew:false },
+    { code:'BTECA 114', title:'Intro to Windows & MS Word',      credits:5, prereq:'None',                                               notes:'Bookkeeping Cert, Acctg Tech Cert & AAS',             isNew:false },
+    { code:'BTECA 136', title:'Ten-Key Mastery',                 credits:1, prereq:'None',                                               notes:'Bookkeeping Cert, Acctg Tech Cert & AAS',             isNew:false },
+    { code:'BTECA 180', title:'Microsoft Outlook',               credits:3, prereq:'None',                                               notes:'Bookkeeping Cert only',                               isNew:false },
+    { code:'COLLG 110', title:'College Success',                 credits:3, prereq:'None – all students',                           notes:'Required for all credentials; first quarter',         isNew:false },
   ];
 
   document.getElementById('courseGrid').innerHTML = `
     <div style="grid-column:1/-1;margin-bottom:12px">
-      <div style="font-size:11px;color:var(--text2);background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:10px">
-        <strong style="color:var(--accent)">Pre-Requisite Reference</strong> &nbsp;|&nbsp;
-        Classes marked <strong style="color:var(--red)">★ NEW PRE-REQ</strong> have new prerequisites added effective <strong style="color:var(--red)">Fall 2007</strong>.
+      <div style="font-size:11px;color:var(--text2);background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:10px;line-height:1.6">
+        <strong style="color:var(--accent)">Course Pre-Req Reference</strong> &nbsp;—&nbsp;
+        Based on the <a href="https://catalog.pierce.ctc.edu" target="_blank" style="color:var(--accent2)">2025–2026 Pierce College Catalog</a>.
+        Courses apply across multiple credential levels as noted.
       </div>
     </div>
     ${courses.map(c => `
-      <div class="panel" style="margin-bottom:0;border-left:3px solid ${c.isNew ? 'var(--red)' : 'var(--border)'}">
+      <div class="panel" style="margin-bottom:0">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px">
-          <div style="font-size:10px;color:var(--accent2)">${c.code} · ${c.credits} cr</div>
-          ${c.isNew ? '<span style=\"font-size:9px;color:var(--red)\">★ NEW PRE-REQ (Fall 2007)</span>' : ''}
+          <div style="font-size:10px;color:var(--accent2);font-weight:600">${c.code} · ${c.credits} cr</div>
         </div>
-        <div style="font-size:12px;color:var(--text);margin-bottom:6px">${c.title}</div>
+        <div style="font-size:12px;color:var(--text);margin-bottom:5px">${c.title}</div>
         <div style="font-size:10px;color:var(--text3)"><strong style="color:var(--accent)">Pre-req:</strong> ${c.prereq}</div>
-        <div style="font-size:10px;color:var(--text3);margin-top:2px;font-style:italic">${c.notes}</div>
+        <div style="font-size:9px;color:var(--text3);margin-top:3px;font-style:italic">${c.notes}</div>
       </div>
     `).join('')}
   `;
