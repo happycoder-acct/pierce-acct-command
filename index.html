@@ -3,1048 +3,1131 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pierce ACCT Command Center</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;1,9..144,400&display=swap" rel="stylesheet">
+<title>Pierce ACCT Command Center v7</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;1,9..144,300&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #0e0f12;
-  --bg2: #15161b;
-  --bg3: #1c1d24;
-  --border: #2a2b35;
+  --bg: #0f0f11;
+  --surface: #17171a;
+  --surface2: #1e1e23;
+  --surface3: #26262d;
+  --border: #2e2e38;
   --accent: #c8a96e;
-  --accent2: #7eb8c9;
-  --accent3: #9b8ecf;
-  --green: #6db87a;
-  --red: #c96e6e;
-  --yellow: #c9b96e;
-  --text: #e8e6df;
-  --text2: #9a9890;
-  --text3: #5a5855;
+  --accent2: #7b9ea8;
+  --accent3: #8b7ec8;
+  --red: #c86e6e;
+  --green: #6ec88a;
+  --text: #e8e6e0;
+  --text2: #9b9790;
+  --text3: #5a5850;
   --mono: 'DM Mono', monospace;
   --serif: 'Fraunces', serif;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: var(--bg); color: var(--text); font-family: var(--mono); font-size: 13px; line-height: 1.5; min-height: 100vh; }
+body { background: var(--bg); color: var(--text); font-family: var(--mono); font-size: 13px; min-height: 100vh; }
+a { color: var(--accent); text-decoration: none; }
 
-/* HEADER */
-.header { background: var(--bg2); border-bottom: 1px solid var(--border); padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
-.header-title { font-family: var(--serif); font-size: 18px; font-weight: 600; color: var(--accent); letter-spacing: -0.3px; }
-.header-sub { font-size: 11px; color: var(--text3); margin-top: 1px; }
-.header-right { display: flex; align-items: center; gap: 12px; }
-.sync-status { font-size: 11px; padding: 3px 10px; border-radius: 20px; }
-.sync-ok { background: rgba(109,184,122,0.15); color: var(--green); border: 1px solid rgba(109,184,122,0.3); }
-.sync-saving { background: rgba(201,185,110,0.15); color: var(--yellow); border: 1px solid rgba(201,185,110,0.3); }
-.sync-error { background: rgba(201,110,110,0.15); color: var(--red); border: 1px solid rgba(201,110,110,0.3); }
-.lock-banner { background: rgba(155,142,207,0.15); border: 1px solid rgba(155,142,207,0.3); color: var(--accent3); font-size: 11px; padding: 3px 10px; border-radius: 20px; }
+/* ── HEADER ── */
+#header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 24px; border-bottom: 1px solid var(--border);
+  background: var(--surface); position: sticky; top: 0; z-index: 100;
+}
+#header .logo { font-family: var(--serif); font-size: 18px; color: var(--accent); letter-spacing: -0.3px; }
+#header .sub { font-size: 10px; color: var(--text3); margin-top: 2px; }
+#header .hright { display: flex; gap: 8px; align-items: center; }
+.sync-status { font-size: 10px; color: var(--text3); padding: 4px 10px; border: 1px solid var(--border); border-radius: 3px; }
+.sync-status.ok { color: var(--green); border-color: var(--green); }
+.sync-status.err { color: var(--red); border-color: var(--red); }
 
-/* TABS */
-.tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border); background: var(--bg2); padding: 0 20px; }
-.tab { padding: 10px 18px; font-family: var(--mono); font-size: 12px; color: var(--text3); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.15s; letter-spacing: 0.3px; }
-.tab:hover { color: var(--text2); }
-.tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+/* ── NAV TABS ── */
+#nav {
+  display: flex; gap: 2px; padding: 0 24px;
+  background: var(--surface); border-bottom: 1px solid var(--border);
+}
+.tab-btn {
+  padding: 10px 18px; font-family: var(--mono); font-size: 11px;
+  color: var(--text3); background: none; border: none; border-bottom: 2px solid transparent;
+  cursor: pointer; letter-spacing: 0.5px; text-transform: uppercase; transition: all .15s;
+}
+.tab-btn:hover { color: var(--text2); }
+.tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
 
-/* MAIN */
-.main { padding: 20px; max-width: 1400px; margin: 0 auto; }
+/* ── DATA CONTROLS (export/import) ── */
+#databar {
+  display: flex; gap: 8px; align-items: center;
+  padding: 8px 24px; background: var(--surface); border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+#databar span { font-size: 10px; color: var(--text3); margin-right: 4px; }
+.dbtn {
+  font-family: var(--mono); font-size: 10px; padding: 4px 12px;
+  background: var(--surface2); color: var(--text2); border: 1px solid var(--border);
+  border-radius: 3px; cursor: pointer; transition: all .15s; letter-spacing: 0.3px;
+}
+.dbtn:hover { background: var(--surface3); color: var(--text); }
+.dbtn.accent { background: #c8a96e22; color: var(--accent); border-color: var(--accent); }
+.dbtn.accent:hover { background: #c8a96e33; }
+#importFile { display: none; }
 
-/* CARDS */
-.card { background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; padding: 16px; margin-bottom: 16px; }
-.card-title { font-family: var(--serif); font-size: 14px; font-weight: 600; color: var(--accent); margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; }
-
-/* BUTTONS */
-.btn { font-family: var(--mono); font-size: 11px; padding: 5px 12px; border-radius: 4px; border: none; cursor: pointer; transition: all 0.15s; letter-spacing: 0.3px; }
-.btn-primary { background: var(--accent); color: var(--bg); font-weight: 500; }
-.btn-primary:hover { background: #d4b97e; }
-.btn-secondary { background: var(--bg3); color: var(--text2); border: 1px solid var(--border); }
-.btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
-.btn-danger { background: rgba(201,110,110,0.15); color: var(--red); border: 1px solid rgba(201,110,110,0.3); }
-.btn-danger:hover { background: rgba(201,110,110,0.25); }
-.btn-green { background: rgba(109,184,122,0.15); color: var(--green); border: 1px solid rgba(109,184,122,0.3); }
-.btn-green:hover { background: rgba(109,184,122,0.25); }
-.btn-sm { padding: 3px 8px; font-size: 10px; }
-
-/* GRID */
+/* ── LAYOUT ── */
+#main { padding: 24px; max-width: 1400px; }
+.panel { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 20px; margin-bottom: 16px; }
+.panel-title { font-family: var(--serif); font-size: 14px; color: var(--accent); margin-bottom: 16px; font-weight: 600; }
 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
 
-/* TIMELINE TAB */
-.timeline-stages { display: flex; flex-direction: column; gap: 6px; }
-.stage { display: flex; align-items: center; gap: 10px; padding: 8px 12px; background: var(--bg3); border-radius: 4px; border: 1px solid var(--border); cursor: pointer; transition: all 0.15s; }
-.stage:hover { border-color: var(--accent2); }
-.stage.active-stage { border-color: var(--accent); background: rgba(200,169,110,0.08); }
-.stage.complete { border-color: var(--green); opacity: 0.7; }
-.stage-num { font-size: 10px; color: var(--text3); min-width: 22px; }
-.stage-name { flex: 1; font-size: 12px; }
-.stage-status { font-size: 10px; padding: 2px 7px; border-radius: 20px; }
-.s-pending { background: rgba(90,88,85,0.3); color: var(--text3); }
-.s-active { background: rgba(200,169,110,0.2); color: var(--accent); }
-.s-done { background: rgba(109,184,122,0.2); color: var(--green); }
-.s-blocked { background: rgba(201,110,110,0.2); color: var(--red); }
+/* ── BUTTONS ── */
+.btn {
+  font-family: var(--mono); font-size: 11px; padding: 7px 16px;
+  background: var(--surface2); color: var(--text2); border: 1px solid var(--border);
+  border-radius: 3px; cursor: pointer; transition: all .15s; letter-spacing: 0.3px;
+}
+.btn:hover { background: var(--surface3); color: var(--text); }
+.btn-accent { background: #c8a96e22; color: var(--accent); border-color: var(--accent); }
+.btn-accent:hover { background: #c8a96e33; }
+.btn-red { background: #c86e6e22; color: var(--red); border-color: var(--red); }
+.btn-red:hover { background: #c86e6e33; }
+.btn-green { background: #6ec88a22; color: var(--green); border-color: var(--green); }
+.btn-green:hover { background: #6ec88a33; }
+.btn-sm { padding: 4px 10px; font-size: 10px; }
 
-/* QUARTER BAR */
-.qbar { display: flex; height: 32px; border-radius: 4px; overflow: hidden; border: 1px solid var(--border); margin-bottom: 12px; }
-.qseg { display: flex; align-items: center; justify-content: center; font-size: 10px; letter-spacing: 0.3px; transition: all 0.2s; }
-.qseg:hover { filter: brightness(1.2); }
+/* ── FORMS ── */
+label { font-size: 10px; color: var(--text3); display: block; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+input[type=text], input[type=email], select, textarea {
+  width: 100%; background: var(--surface2); border: 1px solid var(--border);
+  color: var(--text); font-family: var(--mono); font-size: 12px;
+  padding: 7px 10px; border-radius: 3px; outline: none;
+}
+input[type=text]:focus, input[type=email]:focus, select:focus, textarea:focus { border-color: var(--accent); }
+select option { background: var(--surface2); }
+textarea { resize: vertical; min-height: 70px; }
+.form-row { margin-bottom: 12px; }
+.form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
 
-/* TASK BUCKETS */
-.bucket { background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; padding: 12px; }
-.bucket-title { font-size: 11px; color: var(--text3); letter-spacing: 0.5px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; }
-.task-item { padding: 7px 9px; background: var(--bg2); border: 1px solid var(--border); border-radius: 4px; margin-bottom: 5px; display: flex; align-items: flex-start; gap: 8px; }
-.task-item:hover { border-color: var(--accent2); }
-.task-check { width: 14px; height: 14px; border: 1px solid var(--border); border-radius: 2px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; transition: all 0.15s; }
-.task-check.checked { background: var(--green); border-color: var(--green); }
-.task-check.checked::after { content: '✓'; font-size: 9px; color: var(--bg); }
-.task-text { flex: 1; font-size: 12px; line-height: 1.4; }
-.task-text.done { text-decoration: line-through; color: var(--text3); }
-.task-meta { font-size: 10px; color: var(--text3); margin-top: 2px; }
-.task-actions { display: flex; gap: 4px; flex-shrink: 0; }
+/* ── TIMELINE TAB ── */
+.stage-bar {
+  display: flex; gap: 0; margin-bottom: 20px; border-radius: 4px; overflow: hidden; border: 1px solid var(--border);
+}
+.stage-seg {
+  flex: 1; padding: 8px 4px; text-align: center; font-size: 9px; color: var(--text3);
+  background: var(--surface2); border-right: 1px solid var(--border); cursor: pointer;
+  transition: all .15s; position: relative;
+}
+.stage-seg:last-child { border-right: none; }
+.stage-seg.done { background: #6ec88a18; color: var(--green); }
+.stage-seg.active { background: #c8a96e22; color: var(--accent); font-weight: 500; }
+.stage-seg:hover { background: var(--surface3); }
+.stage-seg .stage-label { font-size: 8px; display: block; margin-top: 2px; }
 
-/* COMING DUE */
-.due-item { padding: 7px 9px; background: var(--bg3); border-radius: 4px; margin-bottom: 5px; border-left: 2px solid var(--accent); }
-.due-label { font-size: 10px; color: var(--text3); }
-.due-date { font-size: 11px; color: var(--accent); }
+.task-list { display: flex; flex-direction: column; gap: 8px; }
+.task-card {
+  background: var(--surface2); border: 1px solid var(--border); border-radius: 4px;
+  padding: 12px 14px; display: flex; justify-content: space-between; align-items: flex-start;
+  gap: 12px; transition: border-color .15s;
+}
+.task-card:hover { border-color: var(--text3); }
+.task-card.milestone { border-left: 3px solid var(--accent); }
+.task-card .tc-left { flex: 1; }
+.task-card .tc-title { font-size: 12px; color: var(--text); margin-bottom: 4px; }
+.task-card .tc-meta { font-size: 10px; color: var(--text3); display: flex; gap: 12px; flex-wrap: wrap; }
+.task-card .tc-meta span { display: flex; align-items: center; gap: 3px; }
+.task-card .tc-actions { display: flex; gap: 6px; flex-shrink: 0; }
+.badge {
+  font-size: 9px; padding: 2px 7px; border-radius: 2px; font-family: var(--mono);
+  background: var(--surface3); color: var(--text3); border: 1px solid var(--border);
+}
+.badge.stage-0 { color: var(--text3); }
+.badge.stage-done { color: var(--green); border-color: #6ec88a44; background: #6ec88a11; }
+.badge.stage-mid { color: var(--accent2); border-color: #7b9ea844; background: #7b9ea811; }
+.badge.stage-late { color: var(--accent); border-color: #c8a96e44; background: #c8a96e11; }
 
-/* PROGRAM MAP TAB */
-.stack-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
-.cred-col { background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; padding: 12px; }
-.cred-title { font-family: var(--serif); font-size: 13px; font-weight: 600; margin-bottom: 8px; }
-.cred-cert { color: var(--accent3); }
-.cred-aas { color: var(--accent2); }
-.cred-bas { color: var(--accent); }
-.course-chip { padding: 4px 8px; background: var(--bg2); border: 1px solid var(--border); border-radius: 3px; margin-bottom: 4px; font-size: 11px; cursor: pointer; transition: all 0.15s; }
-.course-chip:hover { border-color: var(--accent); color: var(--accent); }
-.arrow-col { display: flex; align-items: center; justify-content: center; color: var(--text3); font-size: 18px; }
+.due-panel { }
+.due-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); }
+.due-item:last-child { border-bottom: none; }
+.due-item .di-name { font-size: 11px; color: var(--text); }
+.due-item .di-date { font-size: 10px; color: var(--accent); }
+.due-item .di-bucket { font-size: 9px; color: var(--text3); }
 
-/* PIPELINES TAB */
-.pl-section { margin-bottom: 20px; }
-.pl-section-title { font-size: 11px; color: var(--text3); letter-spacing: 0.6px; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
-.pl-buckets { display: flex; flex-wrap: wrap; gap: 12px; }
-.pl-bucket { background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; padding: 12px; min-width: 220px; flex: 1; }
-.pl-bucket-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-.pl-bucket-name { font-size: 12px; font-weight: 500; color: var(--accent2); }
-.contact-item { padding: 7px 9px; background: var(--bg2); border: 1px solid var(--border); border-radius: 4px; margin-bottom: 5px; }
-.contact-name { font-size: 12px; }
-.contact-role { font-size: 10px; color: var(--text3); }
-.contact-status { font-size: 10px; padding: 1px 6px; border-radius: 20px; display: inline-block; margin-top: 3px; }
-.cs-waiting { background: rgba(201,185,110,0.15); color: var(--yellow); }
-.cs-active { background: rgba(109,184,122,0.15); color: var(--green); }
-.cs-blocked { background: rgba(201,110,110,0.15); color: var(--red); }
+/* ── QUICK ADD ── */
+#quickAdd {
+  position: fixed; bottom: 24px; right: 24px; z-index: 200;
+}
+#qaBtn {
+  width: 48px; height: 48px; border-radius: 50%; background: var(--accent);
+  color: var(--bg); font-size: 24px; border: none; cursor: pointer;
+  box-shadow: 0 4px 20px #c8a96e44; font-family: var(--mono); line-height: 1;
+  display: flex; align-items: center; justify-content: center; transition: transform .15s;
+}
+#qaBtn:hover { transform: scale(1.08); }
+#qaPanel {
+  position: absolute; bottom: 60px; right: 0; width: 340px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 6px;
+  padding: 18px; display: none; box-shadow: 0 8px 32px #00000088;
+}
+#qaPanel.open { display: block; }
+#qaPanel .panel-title { margin-bottom: 14px; font-size: 13px; }
 
-/* ROSTER TAB */
-.roster-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
-.roster-card { background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; padding: 14px; }
-.roster-name { font-family: var(--serif); font-size: 14px; font-weight: 600; margin-bottom: 3px; }
-.roster-role { font-size: 11px; color: var(--accent2); margin-bottom: 6px; }
-.roster-email { font-size: 10px; color: var(--text3); }
+/* ── PIPELINES TAB ── */
+.bucket-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.bucket-title { font-size: 12px; color: var(--accent2); font-weight: 500; }
+.contact-card {
+  background: var(--surface2); border: 1px solid var(--border); border-radius: 4px;
+  padding: 10px 12px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: flex-start;
+}
+.contact-card .cc-name { font-size: 12px; color: var(--text); }
+.contact-card .cc-org { font-size: 10px; color: var(--text3); }
+.contact-card .cc-status { font-size: 9px; padding: 2px 7px; border-radius: 2px; }
+.status-active { background: #6ec88a18; color: var(--green); border: 1px solid #6ec88a33; }
+.status-pending { background: #c8a96e18; color: var(--accent); border: 1px solid #c8a96e33; }
+.status-inactive { background: var(--surface3); color: var(--text3); border: 1px solid var(--border); }
 
-/* ACTION BRIEF */
-.brief-output { background: var(--bg3); border: 1px solid var(--border); border-radius: 4px; padding: 12px; font-size: 11px; line-height: 1.6; white-space: pre-wrap; min-height: 80px; color: var(--text2); }
+/* ── ROSTER TAB ── */
+.roster-card {
+  background: var(--surface2); border: 1px solid var(--border); border-radius: 4px;
+  padding: 14px; display: flex; align-items: center; gap: 14px;
+}
+.avatar {
+  width: 40px; height: 40px; border-radius: 50%; background: var(--surface3);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--serif); font-size: 16px; color: var(--accent); flex-shrink: 0;
+}
+.roster-card .rc-name { font-size: 13px; color: var(--text); }
+.roster-card .rc-role { font-size: 10px; color: var(--text3); }
+.roster-card .rc-email { font-size: 10px; color: var(--accent2); }
 
-/* MODAL */
-.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(3px); }
-.modal { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 20px; min-width: 380px; max-width: 540px; width: 90%; max-height: 80vh; overflow-y: auto; }
-.modal-title { font-family: var(--serif); font-size: 16px; font-weight: 600; color: var(--accent); margin-bottom: 16px; }
-.form-group { margin-bottom: 12px; }
-.form-label { font-size: 11px; color: var(--text3); letter-spacing: 0.4px; margin-bottom: 4px; display: block; }
-.form-input, .form-select, .form-textarea { width: 100%; background: var(--bg3); border: 1px solid var(--border); border-radius: 4px; padding: 7px 10px; font-family: var(--mono); font-size: 12px; color: var(--text); outline: none; transition: border-color 0.15s; }
-.form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--accent); }
-.form-select { cursor: pointer; }
-.form-textarea { resize: vertical; min-height: 80px; }
-.form-select option { background: var(--bg2); }
-.modal-footer { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border); }
+/* ── PROGRAM MAP TAB ── */
+.stack-map { display: flex; gap: 0; align-items: stretch; overflow-x: auto; }
+.stack-col {
+  flex: 1; min-width: 160px; border-right: 1px solid var(--border); padding: 16px 12px;
+}
+.stack-col:last-child { border-right: none; }
+.stack-col-title { font-size: 9px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 12px; }
+.cred-block {
+  background: var(--surface2); border: 1px solid var(--border); border-radius: 4px;
+  padding: 10px; margin-bottom: 8px; cursor: pointer; transition: border-color .15s;
+}
+.cred-block:hover { border-color: var(--accent2); }
+.cred-block .cb-name { font-size: 11px; color: var(--text); margin-bottom: 3px; }
+.cred-block .cb-credits { font-size: 9px; color: var(--text3); }
+.cred-block.proposed { border-style: dashed; border-color: var(--accent); }
+.cred-block.proposed .cb-name { color: var(--accent); }
 
-/* EXPORT/IMPORT BAR */
-.data-bar { display: flex; gap: 8px; align-items: center; background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; padding: 10px 14px; margin-bottom: 16px; flex-wrap: wrap; }
-.data-bar-label { font-size: 11px; color: var(--text3); flex: 1; }
+/* ── ACTION BRIEF ── */
+#briefPanel {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: #000000cc; z-index: 300; display: none; align-items: center; justify-content: center;
+}
+#briefPanel.open { display: flex; }
+#briefBox {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+  padding: 28px; width: 560px; max-width: 95vw; max-height: 80vh; overflow-y: auto;
+}
+#briefContent { background: var(--surface2); border: 1px solid var(--border); border-radius: 4px; padding: 14px; font-size: 11px; line-height: 1.7; color: var(--text2); white-space: pre-wrap; margin-bottom: 14px; }
 
-/* MISC */
-.badge { font-size: 10px; padding: 1px 6px; border-radius: 20px; }
-.hidden { display: none !important; }
-.sep { width: 1px; background: var(--border); height: 20px; margin: 0 4px; }
-.row { display: flex; align-items: center; gap: 8px; }
+/* ── MODAL ── */
+.modal-overlay {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: #000000cc; z-index: 400; display: none; align-items: center; justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal-box {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+  padding: 28px; width: 480px; max-width: 95vw; max-height: 85vh; overflow-y: auto;
+}
+.modal-title { font-family: var(--serif); font-size: 15px; color: var(--accent); margin-bottom: 20px; }
+.modal-footer { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; }
+
+/* ── MISC ──*/
+.empty-state { padding: 32px; text-align: center; color: var(--text3); font-size: 11px; }
+.divider { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
+.flex-row { display: flex; gap: 8px; align-items: center; }
 .ml-auto { margin-left: auto; }
+.text-sm { font-size: 11px; }
+.text-xs { font-size: 10px; color: var(--text3); }
+.color-accent { color: var(--accent); }
+.color-green { color: var(--green); }
+.color-red { color: var(--red); }
 </style>
 </head>
 <body>
 
-<div class="header">
+<div id="header">
   <div>
-    <div class="header-title">⬡ ACCT Command Center</div>
-    <div class="header-sub">Pierce College · Department of Accounting · Tatiana Wetzler, Chair</div>
+    <div class="logo">Pierce ACCT Command Center</div>
+    <div class="sub">Accounting Department · Pierce College · v7</div>
   </div>
-  <div class="header-right">
-    <span id="lockBanner" class="lock-banner hidden">🔒 Locked by another user</span>
-    <span id="syncStatus" class="sync-status sync-ok">● local</span>
-    <button class="btn btn-secondary btn-sm" onclick="trySharePointSync()">↑ SP Sync</button>
+  <div class="hright">
+    <div class="sync-status" id="syncStatus">● local</div>
+    <button class="btn btn-sm btn-accent" onclick="generateBrief()">⚡ Action Brief</button>
+    <button class="btn btn-sm" onclick="openMilestone()">🏁 Milestone</button>
   </div>
 </div>
 
-<div class="tabs">
-  <div class="tab active" onclick="switchTab('timeline', this)">Timeline</div>
-  <div class="tab" onclick="switchTab('programs', this)">Program Map</div>
-  <div class="tab" onclick="switchTab('pipelines', this)">Pipelines</div>
-  <div class="tab" onclick="switchTab('roster', this)">Roster</div>
+<div id="nav">
+  <button class="tab-btn active" onclick="showTab('timeline',this)">Timeline</button>
+  <button class="tab-btn" onclick="showTab('map',this)">Program Map</button>
+  <button class="tab-btn" onclick="showTab('pipelines',this)">Pipelines</button>
+  <button class="tab-btn" onclick="showTab('roster',this)">Roster</button>
 </div>
 
-<div class="main">
+<!-- EXPORT REMINDER BANNER -->
+<div id="exportBanner" style="display:none;background:#c8a96e18;border-bottom:1px solid #c8a96e44;padding:8px 24px;font-size:11px;color:var(--accent);display:flex;align-items:center;gap:16px">
+  <span>⚠ <strong>Unsaved changes</strong> — export JSON and drop it in your shared OneDrive folder so teammates stay in sync.</span>
+  <button class="dbtn accent" onclick="exportData()" style="flex-shrink:0">↓ Export Now</button>
+  <button onclick="dismissBanner()" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px;margin-left:auto">×</button>
+</div>
 
-  <!-- DATA BAR (always visible) -->
-  <div class="data-bar">
-    <span class="data-bar-label">💾 Data stored locally. Export JSON to share or back up.</span>
-    <button class="btn btn-secondary btn-sm" onclick="exportJSON()">Export JSON</button>
-    <button class="btn btn-secondary btn-sm" onclick="document.getElementById('importFile').click()">Import JSON</button>
-    <input type="file" id="importFile" accept=".json" class="hidden" onchange="importJSON(event)">
-    <button class="btn btn-secondary btn-sm" onclick="openActionBrief()">📋 Action Brief</button>
-  </div>
+<!-- DATA CONTROLS BAR -->
+<div id="databar">
+  <span>SHARE DATA:</span>
+  <button class="dbtn accent" onclick="exportData()">↓ Export JSON</button>
+  <button class="dbtn" onclick="document.getElementById('importFile').click()">↑ Import JSON</button>
+  <input type="file" id="importFile" accept=".json" onchange="importData(event)">
+  <span id="lastExportTime" style="margin-left:8px;font-size:10px;color:var(--text3)"></span>
+  <span style="margin-left:auto;font-size:10px;color:var(--text3)">💡 Export → save to shared OneDrive folder → teammates Import to sync</span>
+</div>
 
-  <!-- ═══════════ TIMELINE TAB ═══════════ -->
-  <div id="tab-timeline">
+<div id="main">
 
-    <!-- Quarter bar -->
-    <div class="card">
-      <div class="card-title">
-        BAS-ACCT Approval Journey
-        <div class="row">
-          <button class="btn btn-primary btn-sm" onclick="openAddTask()">+ Add Task</button>
-          <button class="btn btn-secondary btn-sm" onclick="openMilestone()">🏁 Milestone</button>
-        </div>
+<!-- ══════════ TIMELINE TAB ══════════ -->
+<div id="tab-timeline">
+  <div class="panel">
+    <div class="flex-row" style="margin-bottom:16px">
+      <div class="panel-title" style="margin:0">BAS-ACCT Approval Journey</div>
+      <div class="ml-auto flex-row">
+        <select id="stageFilter" class="btn btn-sm" style="width:180px" onchange="renderTasks()">
+          <option value="">All stages</option>
+        </select>
+        <select id="bucketFilter" class="btn btn-sm" style="width:160px" onchange="renderTasks()">
+          <option value="">All buckets</option>
+        </select>
       </div>
-      <div class="qbar" id="qbar"></div>
-      <div class="timeline-stages" id="stageList"></div>
     </div>
-
-    <!-- Task grid: 3 columns -->
-    <div class="grid3" id="taskBuckets"></div>
-
-    <!-- Coming Due -->
-    <div class="card">
-      <div class="card-title">Coming Due</div>
-      <div id="comingDue"></div>
-    </div>
-
-  </div><!-- end timeline tab -->
-
-  <!-- ═══════════ PROGRAM MAP TAB ═══════════ -->
-  <div id="tab-programs" class="hidden">
-    <div class="card">
-      <div class="card-title">Credential Stackability — Pierce College Accounting</div>
-      <div class="stack-grid" id="stackGrid"></div>
-    </div>
-    <div class="card">
-      <div class="card-title">Upper-Division Course Sequence (BAS-ACCT)</div>
-      <div id="courseSeq"></div>
-    </div>
+    <div class="stage-bar" id="stageBar"></div>
+    <div class="task-list" id="taskList"></div>
   </div>
 
-  <!-- ═══════════ PIPELINES TAB ═══════════ -->
-  <div id="tab-pipelines" class="hidden">
-    <div class="row" style="margin-bottom:14px">
-      <button class="btn btn-primary" onclick="openAddPL()">+ Add Contact</button>
-      <button class="btn btn-secondary" onclick="openAddBucket()">+ Add Bucket</button>
+  <div class="grid2">
+    <div class="panel">
+      <div class="panel-title">Coming Due (Next 30 Days)</div>
+      <div id="duePanelContent"></div>
     </div>
-    <div id="plContent"></div>
-  </div>
-
-  <!-- ═══════════ ROSTER TAB ═══════════ -->
-  <div id="tab-roster" class="hidden">
-    <div class="row" style="margin-bottom:14px">
-      <button class="btn btn-primary" onclick="openAddRoster()">+ Add Member</button>
-    </div>
-    <div class="roster-grid" id="rosterGrid"></div>
-  </div>
-
-</div><!-- end main -->
-
-<!-- ═══ MODALS ═══ -->
-
-<!-- Add Task Modal -->
-<div class="modal-overlay hidden" id="modalAddTask">
-  <div class="modal">
-    <div class="modal-title">Add Task</div>
-    <div class="form-group"><label class="form-label">Task</label><input class="form-input" id="tTask" placeholder="Describe the task..."></div>
-    <div class="form-group"><label class="form-label">Bucket</label>
-      <select class="form-select" id="tBucket">
-        <!-- populated dynamically -->
-      </select>
-    </div>
-    <div class="form-group"><label class="form-label">Due Date (optional)</label><input class="form-input" id="tDue" type="date"></div>
-    <div class="form-group"><label class="form-label">Stage</label>
-      <select class="form-select" id="tStage"></select>
-    </div>
-    <div class="form-group"><label class="form-label">Notes</label><textarea class="form-textarea" id="tNotes" placeholder="Optional context..."></textarea></div>
-    <div class="modal-footer">
-      <button class="btn btn-secondary" onclick="closeModal('modalAddTask')">Cancel</button>
-      <button class="btn btn-primary" onclick="saveTask()">Add Task</button>
+    <div class="panel">
+      <div class="panel-title">Quick Stats</div>
+      <div id="statsContent"></div>
     </div>
   </div>
 </div>
 
-<!-- Edit Task Modal -->
-<div class="modal-overlay hidden" id="modalEditTask">
-  <div class="modal">
+<!-- ══════════ PROGRAM MAP TAB ══════════ -->
+<div id="tab-map" style="display:none">
+  <div class="panel">
+    <div class="panel-title">Credential Stackability Pathway</div>
+    <div class="stack-map" id="stackMap"></div>
+  </div>
+  <div class="panel">
+    <div class="panel-title">Upper-Division Course Sequence (BAS-ACCT)</div>
+    <div id="courseGrid" class="grid3"></div>
+  </div>
+</div>
+
+<!-- ══════════ PIPELINES TAB ══════════ -->
+<div id="tab-pipelines" style="display:none">
+  <div class="flex-row" style="margin-bottom:16px">
+    <div style="font-family:var(--serif);font-size:15px;color:var(--text2)">Pipeline Contacts</div>
+    <div class="ml-auto flex-row">
+      <button class="btn btn-accent btn-sm" onclick="openAddPL()">+ Add Contact</button>
+      <button class="btn btn-sm" onclick="openAddBucket()">+ Add Bucket</button>
+    </div>
+  </div>
+  <div id="bucketsContainer"></div>
+</div>
+
+<!-- ══════════ ROSTER TAB ══════════ -->
+<div id="tab-roster" style="display:none">
+  <div class="flex-row" style="margin-bottom:16px">
+    <div style="font-family:var(--serif);font-size:15px;color:var(--text2)">Department Roster</div>
+    <button class="btn btn-accent btn-sm ml-auto" onclick="openAddRoster()">+ Add Member</button>
+  </div>
+  <div class="grid2" id="rosterGrid"></div>
+</div>
+
+</div><!-- /main -->
+
+<!-- ══════════ QUICK ADD FLOAT ══════════ -->
+<div id="quickAdd">
+  <div id="qaPanel">
+    <div class="panel-title">Quick Add Task</div>
+    <div class="form-row">
+      <label>Task Title</label>
+      <input type="text" id="qaTitle" placeholder="e.g. Submit Appendix G to SBCTC">
+    </div>
+    <div class="form-row-2">
+      <div>
+        <label>Due Date</label>
+        <input type="text" id="qaDue" placeholder="e.g. 2026-04-15">
+      </div>
+      <div>
+        <label>Stage</label>
+        <select id="qaStage"></select>
+      </div>
+    </div>
+    <div class="form-row">
+      <label>Pipeline Bucket</label>
+      <select id="qaBucket"></select>
+    </div>
+    <div class="form-row">
+      <label>Notes</label>
+      <textarea id="qaNotes" rows="2" placeholder="Optional context..."></textarea>
+    </div>
+    <div class="flex-row">
+      <button class="btn btn-accent" onclick="addTask()">Add Task</button>
+      <button class="btn" onclick="closeQA()">Cancel</button>
+    </div>
+  </div>
+  <button id="qaBtn" onclick="toggleQA()">+</button>
+</div>
+
+<!-- ══════════ ACTION BRIEF PANEL ══════════ -->
+<div id="briefPanel">
+  <div id="briefBox">
+    <div style="font-family:var(--serif);font-size:17px;color:var(--accent);margin-bottom:16px">Action Brief</div>
+    <div id="briefContent"></div>
+    <div class="flex-row">
+      <button class="btn btn-accent" onclick="copyBrief()">Copy to Clipboard</button>
+      <button class="btn" onclick="closeBrief()">Close</button>
+      <span id="copiedMsg" style="font-size:10px;color:var(--green);display:none">Copied!</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ TASK EDIT MODAL ══════════ -->
+<div class="modal-overlay" id="editTaskModal">
+  <div class="modal-box">
     <div class="modal-title">Edit Task</div>
     <input type="hidden" id="etId">
-    <div class="form-group"><label class="form-label">Task</label><input class="form-input" id="etTask"></div>
-    <div class="form-group"><label class="form-label">Bucket</label>
-      <select class="form-select" id="etBucket">
-        <!-- populated dynamically — BUG FIX #2 -->
-      </select>
+    <div class="form-row">
+      <label>Title</label>
+      <input type="text" id="etTitle">
     </div>
-    <div class="form-group"><label class="form-label">Due Date</label><input class="form-input" id="etDue" type="date"></div>
-    <div class="form-group"><label class="form-label">Stage</label>
-      <select class="form-select" id="etStage"></select>
-    </div>
-    <div class="form-group"><label class="form-label">Notes</label><textarea class="form-textarea" id="etNotes"></textarea></div>
-    <div class="modal-footer">
-      <button class="btn btn-danger btn-sm" onclick="deleteTask(document.getElementById('etId').value)">Delete</button>
-      <div class="ml-auto row" style="gap:8px">
-        <button class="btn btn-secondary" onclick="closeModal('modalEditTask')">Cancel</button>
-        <button class="btn btn-primary" onclick="saveEditTask()">Save</button>
+    <div class="form-row-2">
+      <div>
+        <label>Due Date</label>
+        <input type="text" id="etDue">
+      </div>
+      <div>
+        <label>Stage</label>
+        <select id="etStage"></select>
       </div>
     </div>
-  </div>
-</div>
-
-<!-- Milestone Modal -->
-<div class="modal-overlay hidden" id="modalMilestone">
-  <div class="modal">
-    <div class="modal-title">🏁 Set Milestone</div>
-    <div class="form-group"><label class="form-label">Milestone Label</label><input class="form-input" id="msLabel" value="SBCTC Board Approval — FA2027"></div>
-    <div class="form-group"><label class="form-label">Target Date</label><input class="form-input" id="msDate" type="date"></div>
+    <!-- FIX 2: bucket field added to edit modal -->
+    <div class="form-row">
+      <label>Pipeline Bucket</label>
+      <select id="etBucket"></select>
+    </div>
+    <div class="form-row">
+      <label>Notes</label>
+      <textarea id="etNotes" rows="3"></textarea>
+    </div>
+    <div class="form-row">
+      <label>Milestone?</label>
+      <select id="etMilestone">
+        <option value="0">No</option>
+        <option value="1">Yes</option>
+      </select>
+    </div>
     <div class="modal-footer">
-      <button class="btn btn-secondary" onclick="closeModal('modalMilestone')">Cancel</button>
-      <button class="btn btn-primary" onclick="saveMilestone()">Set</button>
+      <button class="btn btn-accent" onclick="saveEditTask()">Save</button>
+      <button class="btn btn-red" onclick="deleteTask()">Delete</button>
+      <button class="btn" onclick="closeModal('editTaskModal')">Cancel</button>
     </div>
   </div>
 </div>
 
-<!-- Add Bucket Modal -->
-<div class="modal-overlay hidden" id="modalAddBucket">
-  <div class="modal">
+<!-- ══════════ ADD CONTACT MODAL ══════════ -->
+<div class="modal-overlay" id="addPLModal">
+  <div class="modal-box">
+    <div class="modal-title">Add Pipeline Contact</div>
+    <div class="form-row">
+      <label>Name</label>
+      <input type="text" id="plName">
+    </div>
+    <div class="form-row-2">
+      <div>
+        <label>Organization</label>
+        <input type="text" id="plOrg">
+      </div>
+      <div>
+        <label>Title</label>
+        <input type="text" id="plTitle">
+      </div>
+    </div>
+    <div class="form-row-2">
+      <div>
+        <label>Email</label>
+        <input type="email" id="plEmail">
+      </div>
+      <div>
+        <label>Status</label>
+        <select id="plStatus">
+          <option value="active">Active</option>
+          <option value="pending">Pending</option>
+          <option value="inactive">Inactive</option>
+        </select>
+      </div>
+    </div>
+    <!-- FIX 1: bucket selector properly populated -->
+    <div class="form-row">
+      <label>Pipeline Bucket</label>
+      <select id="plCat"></select>
+    </div>
+    <div class="form-row">
+      <label>Notes</label>
+      <textarea id="plNotes" rows="2"></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-accent" onclick="saveContact()">Save Contact</button>
+      <button class="btn" onclick="closeModal('addPLModal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ ADD BUCKET MODAL ══════════ -->
+<div class="modal-overlay" id="addBucketModal">
+  <div class="modal-box">
     <div class="modal-title">Add Pipeline Bucket</div>
-    <div class="form-group"><label class="form-label">Bucket Name</label><input class="form-input" id="bName" placeholder="e.g. SBCTC Reviewers"></div>
-    <div class="form-group"><label class="form-label">Section</label>
-      <select class="form-select" id="bSection">
+    <div class="form-row">
+      <label>Bucket Name</label>
+      <input type="text" id="bkName" placeholder="e.g. Advisory Board Members">
+    </div>
+    <div class="form-row">
+      <label>Type</label>
+      <select id="bkType">
         <option value="internal">Internal to Pierce</option>
         <option value="external">External to Pierce</option>
       </select>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-secondary" onclick="closeModal('modalAddBucket')">Cancel</button>
-      <button class="btn btn-primary" onclick="saveBucket()">Add</button>
+      <button class="btn btn-accent" onclick="saveBucket()">Add Bucket</button>
+      <button class="btn" onclick="closeModal('addBucketModal')">Cancel</button>
     </div>
   </div>
 </div>
 
-<!-- Add Contact Modal -->
-<div class="modal-overlay hidden" id="modalAddPL">
-  <div class="modal">
-    <div class="modal-title">Add Contact</div>
-    <div class="form-group"><label class="form-label">Name</label><input class="form-input" id="plName" placeholder="Full name"></div>
-    <div class="form-group"><label class="form-label">Role / Title</label><input class="form-input" id="plRole" placeholder="Title or relationship"></div>
-    <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="plEmail" placeholder="email@pierce.ctc.edu"></div>
-    <div class="form-group"><label class="form-label">Status</label>
-      <select class="form-select" id="plStatus">
-        <option value="waiting">Waiting</option>
-        <option value="active">Active</option>
-        <option value="blocked">Blocked</option>
-      </select>
+<!-- ══════════ ADD ROSTER MODAL ══════════ -->
+<div class="modal-overlay" id="addRosterModal">
+  <div class="modal-box">
+    <div class="modal-title">Add Roster Member</div>
+    <div class="form-row">
+      <label>Name</label>
+      <input type="text" id="rmName">
     </div>
-    <div class="form-group"><label class="form-label">Pipeline Bucket</label>
-      <select class="form-select" id="plCat">
-        <!-- BUG FIX #1: populated on modal open -->
-      </select>
+    <div class="form-row-2">
+      <div>
+        <label>Role</label>
+        <input type="text" id="rmRole" placeholder="e.g. Adjunct Faculty">
+      </div>
+      <div>
+        <label>Email</label>
+        <input type="email" id="rmEmail">
+      </div>
     </div>
-    <div class="form-group"><label class="form-label">Notes</label><textarea class="form-textarea" id="plNotes" placeholder="Optional..."></textarea></div>
     <div class="modal-footer">
-      <button class="btn btn-secondary" onclick="closeModal('modalAddPL')">Cancel</button>
-      <button class="btn btn-primary" onclick="saveContact()">Add</button>
+      <button class="btn btn-accent" onclick="saveRoster()">Add Member</button>
+      <button class="btn" onclick="closeModal('addRosterModal')">Cancel</button>
     </div>
   </div>
 </div>
 
-<!-- Add Roster Modal -->
-<div class="modal-overlay hidden" id="modalAddRoster">
-  <div class="modal">
-    <div class="modal-title">Add Team Member</div>
-    <div class="form-group"><label class="form-label">Name</label><input class="form-input" id="rName"></div>
-    <div class="form-group"><label class="form-label">Role</label><input class="form-input" id="rRole"></div>
-    <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="rEmail"></div>
-    <div class="form-group"><label class="form-label">Notes</label><textarea class="form-textarea" id="rNotes"></textarea></div>
-    <div class="modal-footer">
-      <button class="btn btn-secondary" onclick="closeModal('modalAddRoster')">Cancel</button>
-      <button class="btn btn-primary" onclick="saveRosterMember()">Add</button>
+<!-- ══════════ MILESTONE MODAL ══════════ -->
+<div class="modal-overlay" id="milestoneModal">
+  <div class="modal-box">
+    <div class="modal-title">🏁 Add Milestone</div>
+    <div class="form-row">
+      <label>Milestone Title</label>
+      <input type="text" id="msTitle" value="BAS-ACCT Launch — FA2027">
     </div>
-  </div>
-</div>
-
-<!-- Action Brief Modal -->
-<div class="modal-overlay hidden" id="modalBrief">
-  <div class="modal" style="max-width:600px">
-    <div class="modal-title">📋 Action Brief Generator</div>
-    <div class="form-group"><label class="form-label">Topic / Focus Area</label><input class="form-input" id="briefFocus" placeholder="e.g. SBCTC submission prep, advisory board outreach..."></div>
-    <button class="btn btn-primary" style="margin-bottom:12px" onclick="generateBrief()">Generate Brief</button>
-    <div class="brief-output" id="briefOutput">Brief will appear here. Copy and paste into Claude to get a drafted document, email, or action plan.</div>
-    <div class="modal-footer">
-      <button class="btn btn-secondary" onclick="closeModal('modalBrief')">Close</button>
-      <button class="btn btn-green" onclick="copyBrief()">Copy Brief</button>
+    <div class="form-row">
+      <label>Target Date</label>
+      <input type="text" id="msDate" value="2027-09-01">
     </div>
-  </div>
-</div>
-
-<!-- Course Detail Modal -->
-<div class="modal-overlay hidden" id="modalCourse">
-  <div class="modal">
-    <div class="modal-title" id="courseModalTitle"></div>
-    <div id="courseModalBody" style="font-size:12px; line-height:1.7; color:var(--text2)"></div>
     <div class="modal-footer">
-      <button class="btn btn-secondary" onclick="closeModal('modalCourse')">Close</button>
+      <button class="btn btn-accent" onclick="saveMilestone()">Add Milestone</button>
+      <button class="btn" onclick="closeModal('milestoneModal')">Cancel</button>
     </div>
   </div>
 </div>
 
 <script>
-// ═══════════════════════════════════════════════
-// DATA MODEL
-// ═══════════════════════════════════════════════
-
-const STORAGE_KEY = 'pierce_acct_cache';
-const SP_TENANT = 'piercecollege-my.sharepoint.com';
-const SP_FOLDER = 'ACCT Command Center';
-const SP_FILE = 'pierce_acct_data.json';
+// ══════════════════════════════════════════════
+//  DATA LAYER
+// ══════════════════════════════════════════════
+const LS_KEY    = 'pierce_acct_cache';
 
 const STAGES = [
-  'Idea / Pre-Proposal',
-  'Internal Department Review',
-  'Curriculum Committee',
-  'Dean Approval',
-  'CAO / VPL Approval',
-  'Board of Trustees',
-  'SBCTC Notice of Intent',
-  'SBCTC Peer Review',
-  'SBCTC Staff Review',
-  'SBCTC Board Presentation',
-  'Approved — Implementation Planning',
-  'Program Launch'
+  'Concept','Curriculum Draft','Faculty Review','Advisory Board','Dept Approval',
+  'Dean Review','CAO Approval','Trustees','SBCTC Submission','SBCTC Review','Approved'
 ];
 
-const QUARTER_COLORS = [
-  { label: 'SP25', color: '#2a3a4a' },
-  { label: 'SU25', color: '#2a4a3a' },
-  { label: 'FA25', color: '#3a2a4a' },
-  { label: 'WI26', color: '#4a3a2a' },
-  { label: 'SP26', color: '#2a3a4a' },
-  { label: 'SU26', color: '#2a4a3a' },
-  { label: 'FA26', color: '#3a2a4a' },
-  { label: 'WI27', color: '#4a3a2a' },
-  { label: 'SP27', color: '#2a3a4a' },
-  { label: 'FA27 🏁', color: '#4a3a20' },
-];
-
-const DEFAULT_DATA = {
-  tasks: [
-    { id: 't1', text: 'Update labor market data to 2025/2026 WA ESD projections', bucket: 'BAS Proposal', due: '2026-04-01', stage: 6, notes: 'Replace BLS 2023 data in Appendix C', done: false },
-    { id: 't2', text: 'Verify all URL citations before submission', bucket: 'BAS Proposal', due: '2026-04-15', stage: 6, notes: 'Manual check — test every link', done: false },
-    { id: 't3', text: 'Secure advisory board signed membership forms', bucket: 'Advisory Board', due: '2026-03-31', stage: 5, notes: 'Appendix G requires signed forms', done: false },
-    { id: 't4', text: 'Complete external expert review (Appendix I)', bucket: 'BAS Proposal', due: '2026-05-01', stage: 7, notes: '2-3 external reviewers needed', done: false },
-    { id: 't5', text: 'Integrate all sentence-level edits into final document', bucket: 'BAS Proposal', due: '2026-04-20', stage: 6, notes: 'Language strengthening pass', done: false },
-    { id: 't6', text: 'Submit AAS annual program review', bucket: 'AAS Program', due: '2026-03-20', stage: 1, notes: '', done: false },
-    { id: 't7', text: 'Schedule spring advisory board meeting', bucket: 'Advisory Board', due: '2026-04-10', stage: 4, notes: '', done: false },
-    { id: 't8', text: 'Q3 schedule submission to Dean', bucket: 'Scheduling', due: '2026-03-25', stage: 2, notes: '', done: false },
-  ],
-  buckets: ['BAS Proposal', 'AAS Program', 'Advisory Board', 'Scheduling', 'Faculty'],
-  contacts: [
-    { id: 'c1', name: 'Dean (Business & Social Sciences)', role: 'District Dean', email: '', status: 'active', bucket: 'internal', cat: 'Institutional Leadership', notes: 'BAS proposal sponsor' },
-    { id: 'c2', name: 'SBCTC Program Approval', role: 'State Board Contact', email: '', status: 'waiting', bucket: 'external', cat: 'SBCTC', notes: '' },
-    { id: 'c3', name: 'Everett CC BAS Coordinator', role: 'Peer Institution', email: '', status: 'active', bucket: 'external', cat: 'Peer Institutions', notes: 'Consultation on SBCTC process' },
-  ],
-  plBuckets: {
-    internal: ['Institutional Leadership', 'Curriculum Committee', 'Faculty'],
-    external: ['SBCTC', 'Advisory Board Members', 'Peer Institutions', 'Professional Orgs']
-  },
-  roster: [
-    { id: 'r1', name: 'Tatiana Wetzler', role: 'Department Chair, Accounting', email: 'TWetzler@pierce.ctc.edu', notes: 'BAS-ACCT Project Lead' }
-  ],
-  milestone: { label: 'SBCTC Board Approval — FA2027', date: '2027-09-01' },
-  stageStatuses: { 0: 'done', 1: 'done', 2: 'done', 3: 'done', 4: 'active', 5: 'pending', 6: 'pending', 7: 'pending', 8: 'pending', 9: 'pending', 10: 'pending', 11: 'pending' }
+const STAGE_BADGE = (i) => {
+  if (i === 0) return 'stage-0';
+  if (i >= 9)  return 'stage-done';
+  if (i >= 6)  return 'stage-late';
+  if (i >= 3)  return 'stage-mid';
+  return '';
 };
 
-const COURSES = {
-  certs: [
-    { code: 'ACCT 101', name: 'Financial Accounting I', desc: 'Accounting equation, journal entries, financial statements.' },
-    { code: 'ACCT 102', name: 'Financial Accounting II', desc: 'Receivables, inventories, long-term assets, liabilities.' },
-    { code: 'BUS 101', name: 'Intro to Business', desc: 'Business structures, markets, management principles.' },
-  ],
-  bookkeeping: [
-    { code: 'ACCT 110', name: 'Bookkeeping I', desc: 'Payroll, cash management, QuickBooks basics.' },
-    { code: 'ACCT 111', name: 'Bookkeeping II', desc: 'Advanced QuickBooks, bank rec, reporting.' },
-  ],
-  accttech: [
-    { code: 'ACCT 201', name: 'Managerial Accounting', desc: 'Cost-volume-profit, budgeting, variance analysis.' },
-    { code: 'ACCT 210', name: 'Tax Accounting I', desc: 'Individual federal/state income tax preparation.' },
-    { code: 'ACCT 220', name: 'Business Law', desc: 'Contracts, agency, employment, UCC.' },
-  ],
-  aas: [
-    { code: 'ACCT 230', name: 'Accounting Information Systems', desc: 'ERP systems, internal controls, data flows.' },
-    { code: 'ACCT 240', name: 'Tax Accounting II', desc: 'Business entities: partnerships, S corps, C corps.' },
-    { code: 'BUS 250', name: 'Business Communications', desc: 'Professional writing, presentations, stakeholder engagement.' },
-  ],
-  bas: [
-    { code: 'ACCT 301', name: 'Intermediate Financial I', desc: 'Revenue recognition, GAAP deep-dive, complex assets.' },
-    { code: 'ACCT 302', name: 'Intermediate Financial II', desc: 'Leases, pensions, EPS, comprehensive income.' },
-    { code: 'ACCT 310', name: 'Advanced Taxation', desc: 'LLCs, partnerships, sole proprietorships, tax credits.' },
-    { code: 'ACCT 320', name: 'Cost Accounting', desc: 'Job costing, process costing, standard costs, ABC.' },
-    { code: 'ACCT 410', name: 'Governmental Accounting', desc: 'GASB standards, fund accounting, public sector reporting.' },
-    { code: 'ACCT 420', name: 'Audit & Assurance', desc: 'GAAS, risk assessment, internal controls, audit reports.' },
-    { code: 'ACCT 450', name: 'Advanced Topics', desc: 'Consolidations, derivatives, foreign currency, emerging issues.' },
-    { code: 'ACCT 490', name: 'Capstone', desc: 'Applied analysis project integrating all program PLOs.' },
-  ]
-};
+function defaultData() {
+  return {
+    tasks: [
+      { id:'t1', title:'Update BAS-ACCT labor market data (2025/2026 WA ESD)', due:'2026-03-28', stage:4, bucket:'Internal — BAS Proposal', notes:'Verify WA ESD 2025 projections are integrated. Replace 2023 BLS data.', milestone:false },
+      { id:'t2', title:'Manual URL verification — all citation links', due:'2026-04-05', stage:4, bucket:'Internal — BAS Proposal', notes:'Test every URL before final submission.', milestone:false },
+      { id:'t3', title:'Secure advisory board signed membership forms', due:'2026-04-12', stage:5, bucket:'External — Advisory Board', notes:'Appendix G requires signed forms.', milestone:false },
+      { id:'t4', title:'Complete external expert review (Appendix I)', due:'2026-04-30', stage:5, bucket:'External — Reviewers', notes:'Need 2-3 external reviewers.', milestone:false },
+      { id:'t5', title:'Final 48-hour pre-submission sweep', due:'2026-05-10', stage:6, bucket:'Internal — BAS Proposal', notes:'Run full mock reviewer checklist (13 items).', milestone:false },
+      { id:'t6', title:'Submit to SBCTC', due:'2026-05-15', stage:7, bucket:'External — SBCTC', notes:'Final submission package.', milestone:true },
+      { id:'t7', title:'BAS-ACCT Launch — FA2027', due:'2027-09-01', stage:10, bucket:'Internal — BAS Proposal', notes:'Target cohort start date.', milestone:true },
+    ],
+    buckets: [
+      { id:'b1', name:'Internal — BAS Proposal', type:'internal' },
+      { id:'b2', name:'Internal — AAS Program', type:'internal' },
+      { id:'b3', name:'Internal — Adjunct Management', type:'internal' },
+      { id:'b4', name:'External — SBCTC', type:'external' },
+      { id:'b5', name:'External — Advisory Board', type:'external' },
+      { id:'b6', name:'External — Reviewers', type:'external' },
+    ],
+    contacts: [
+      { id:'c1', name:'SBCTC Program Approval', org:'SBCTC', title:'Program Review', email:'', status:'active', bucket:'External — SBCTC', notes:'' },
+    ],
+    roster: [
+      { id:'r1', name:'Tatiana Wetzler', role:'Department Chair', email:'TWetzler@pierce.ctc.edu' },
+    ],
+    activeStage: 4,
+    meta: { lastSave: new Date().toISOString() }
+  };
+}
 
-// ═══════════════════════════════════════════════
-// STATE & PERSISTENCE
-// ═══════════════════════════════════════════════
+let D = loadLocal();
 
-let data = JSON.parse(JSON.stringify(DEFAULT_DATA));
-
-function loadData() {
+function loadLocal() {
   try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) data = JSON.parse(saved);
-  } catch(e) { console.warn('Load failed', e); }
+    const raw = localStorage.getItem(LS_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch(e) {}
+  return defaultData();
 }
 
-function saveData() {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-    setSyncStatus('ok');
-  } catch(e) { setSyncStatus('error'); }
+let _dirty = false;
+
+function saveLocal() {
+  D.meta.lastSave = new Date().toISOString();
+  localStorage.setItem(LS_KEY, JSON.stringify(D));
+  _dirty = true;
+  showExportBanner();
 }
 
-function setSyncStatus(state) {
-  const el = document.getElementById('syncStatus');
-  el.className = 'sync-status';
-  if (state === 'ok') { el.classList.add('sync-ok'); el.textContent = '● local'; }
-  else if (state === 'saving') { el.classList.add('sync-saving'); el.textContent = '↑ saving...'; }
-  else { el.classList.add('sync-error'); el.textContent = '✕ error'; }
+function showExportBanner() {
+  const b = document.getElementById('exportBanner');
+  if (b) b.style.display = 'flex';
 }
 
-// ═══════════════════════════════════════════════
-// EXPORT / IMPORT  (BUG FIX #3)
-// ═══════════════════════════════════════════════
+function dismissBanner() {
+  const b = document.getElementById('exportBanner');
+  if (b) b.style.display = 'none';
+}
 
-function exportJSON() {
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+// ── Export JSON ──
+function exportData() {
+  const blob = new Blob([JSON.stringify(D, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = 'pierce_acct_data_' + new Date().toISOString().slice(0,10) + '.json';
+  const dateStr = new Date().toISOString().slice(0,10);
+  a.download = 'pierce_acct_data_' + dateStr + '.json';
   a.click();
   URL.revokeObjectURL(url);
+  _dirty = false;
+  dismissBanner();
+  const t = document.getElementById('lastExportTime');
+  if (t) t.textContent = '✓ Exported ' + new Date().toLocaleTimeString();
+  // remind where to put it
+  setTimeout(() => alert('File downloaded!\n\nDrop it in your shared OneDrive folder so teammates can Import it.'), 300);
 }
 
-function importJSON(event) {
+// ── Import JSON ──
+function importData(event) {
   const file = event.target.files[0];
   if (!file) return;
   const reader = new FileReader();
   reader.onload = (e) => {
     try {
       const imported = JSON.parse(e.target.result);
-      data = imported;
-      saveData();
-      renderAll();
-      alert('Data imported successfully.');
+      if (imported.tasks && imported.buckets) {
+        D = imported;
+        saveLocal();
+        renderAll();
+        alert('Data imported successfully from ' + file.name);
+      } else {
+        alert('Invalid data file — missing tasks or buckets.');
+      }
     } catch(err) {
-      alert('Invalid JSON file.');
+      alert('Could not parse file: ' + err.message);
     }
   };
   reader.readAsText(file);
-  event.target.value = '';
+  event.target.value = ''; // reset so same file can be re-imported
 }
 
-// ═══════════════════════════════════════════════
-// SHAREPOINT SYNC (optional, graceful fail)
-// ═══════════════════════════════════════════════
+// SP Sync removed — use Export/Import JSON workflow instead
 
-async function trySharePointSync() {
-  setSyncStatus('saving');
-  try {
-    const getUrl = `https://${SP_TENANT}/_api/v2.0/drive/root:/${SP_FOLDER}/${SP_FILE}:/content`;
-    const res = await fetch(getUrl, { credentials: 'include' });
-    if (res.ok) {
-      const remote = await res.json();
-      // Simple last-write-wins for now
-      const putUrl = `https://${SP_TENANT}/_api/v2.0/drive/root:/${SP_FOLDER}/${SP_FILE}:/content`;
-      await fetch(putUrl, {
-        method: 'PUT',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      });
-      setSyncStatus('ok');
-      const el = document.getElementById('syncStatus');
-      el.textContent = '● synced';
-    } else {
-      setSyncStatus('error');
-      alert('SharePoint sync failed. Make sure you\'re signed into OneDrive in this browser first. Until then, use Export/Import JSON to share data.');
-    }
-  } catch(e) {
-    setSyncStatus('error');
-    alert('SharePoint unreachable. Use Export/Import JSON to share data between team members.');
+// ══════════════════════════════════════════════
+//  TABS
+// ══════════════════════════════════════════════
+function showTab(name, btn) {
+  ['timeline','map','pipelines','roster'].forEach(t => {
+    document.getElementById('tab-'+t).style.display = t===name ? '' : 'none';
+  });
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  if (name === 'pipelines') renderBuckets();
+  if (name === 'roster') renderRoster();
+  if (name === 'map') renderMap();
+}
+
+// ══════════════════════════════════════════════
+//  TIMELINE RENDER
+// ══════════════════════════════════════════════
+function renderAll() {
+  renderStageBar();
+  renderTasks();
+  renderDue();
+  renderStats();
+  populateFilters();
+}
+
+function renderStageBar() {
+  const bar = document.getElementById('stageBar');
+  bar.innerHTML = STAGES.map((s,i) => {
+    const cls = i < D.activeStage ? 'done' : i === D.activeStage ? 'active' : '';
+    return `<div class="stage-seg ${cls}" onclick="setActiveStage(${i})" title="${s}">
+      ${i+1}<span class="stage-label">${s.length>10?s.slice(0,9)+'…':s}</span>
+    </div>`;
+  }).join('');
+}
+
+function setActiveStage(i) {
+  D.activeStage = i; saveLocal(); renderStageBar();
+}
+
+function renderTasks() {
+  const stageF = document.getElementById('stageFilter')?.value;
+  const bucketF = document.getElementById('bucketFilter')?.value;
+  let tasks = [...D.tasks];
+  if (stageF !== '') tasks = tasks.filter(t => t.stage == stageF);
+  if (bucketF) tasks = tasks.filter(t => t.bucket === bucketF);
+  tasks.sort((a,b) => (a.due||'9999') < (b.due||'9999') ? -1 : 1);
+
+  const list = document.getElementById('taskList');
+  if (!tasks.length) { list.innerHTML = '<div class="empty-state">No tasks. Hit + to add one.</div>'; return; }
+  list.innerHTML = tasks.map(t => {
+    const stageName = STAGES[t.stage] || 'Unknown';
+    const badgeCls = STAGE_BADGE(t.stage);
+    const milestoneCls = t.milestone ? 'milestone' : '';
+    return `<div class="task-card ${milestoneCls}">
+      <div class="tc-left">
+        <div class="tc-title">${t.milestone?'🏁 ':''}${esc(t.title)}</div>
+        <div class="tc-meta">
+          ${t.due ? `<span>📅 ${t.due}</span>` : ''}
+          <span class="badge ${badgeCls}">${stageName}</span>
+          ${t.bucket ? `<span class="badge">${esc(t.bucket)}</span>` : ''}
+        </div>
+        ${t.notes ? `<div style="font-size:10px;color:var(--text3);margin-top:6px">${esc(t.notes)}</div>` : ''}
+      </div>
+      <div class="tc-actions">
+        <button class="btn btn-sm" onclick="openEditTask('${t.id}')">Edit</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderDue() {
+  const now = new Date();
+  const limit = new Date(now.getTime() + 30*24*60*60*1000);
+  const due = D.tasks
+    .filter(t => t.due && new Date(t.due) <= limit && new Date(t.due) >= now)
+    .sort((a,b) => a.due < b.due ? -1 : 1);
+  const el = document.getElementById('duePanelContent');
+  if (!due.length) { el.innerHTML = '<div class="empty-state">Nothing due in the next 30 days.</div>'; return; }
+  el.innerHTML = due.map(t => `<div class="due-item">
+    <div><div class="di-name">${esc(t.title)}</div><div class="di-bucket">${esc(t.bucket||'')}</div></div>
+    <div class="di-date">${t.due}</div>
+  </div>`).join('');
+}
+
+function renderStats() {
+  const total = D.tasks.length;
+  const milestones = D.tasks.filter(t=>t.milestone).length;
+  const done = D.tasks.filter(t=>t.stage >= STAGES.length-1).length;
+  const contacts = D.contacts.length;
+  document.getElementById('statsContent').innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:14px;text-align:center">
+        <div style="font-size:24px;color:var(--accent);font-family:var(--serif)">${total}</div>
+        <div style="font-size:10px;color:var(--text3)">Total Tasks</div>
+      </div>
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:14px;text-align:center">
+        <div style="font-size:24px;color:var(--accent);font-family:var(--serif)">${milestones}</div>
+        <div style="font-size:10px;color:var(--text3)">Milestones</div>
+      </div>
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:14px;text-align:center">
+        <div style="font-size:24px;color:var(--green);font-family:var(--serif)">${done}</div>
+        <div style="font-size:10px;color:var(--text3)">Completed</div>
+      </div>
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:14px;text-align:center">
+        <div style="font-size:24px;color:var(--accent2);font-family:var(--serif)">${contacts}</div>
+        <div style="font-size:10px;color:var(--text3)">Contacts</div>
+      </div>
+    </div>
+    <div style="margin-top:12px;font-size:10px;color:var(--text3)">
+      Current stage: <span style="color:var(--accent)">${STAGES[D.activeStage]}</span>
+    </div>`;
+}
+
+function populateFilters() {
+  const sf = document.getElementById('stageFilter');
+  const bf = document.getElementById('bucketFilter');
+  if (!sf || !bf) return;
+  const curS = sf.value, curB = bf.value;
+  sf.innerHTML = '<option value="">All stages</option>' + STAGES.map((s,i) => `<option value="${i}">${s}</option>`).join('');
+  sf.value = curS;
+  bf.innerHTML = '<option value="">All buckets</option>' + D.buckets.map(b => `<option value="${esc(b.name)}">${esc(b.name)}</option>`).join('');
+  bf.value = curB;
+}
+
+// ══════════════════════════════════════════════
+//  TASK ADD / EDIT
+// ══════════════════════════════════════════════
+function toggleQA() {
+  const p = document.getElementById('qaPanel');
+  p.classList.toggle('open');
+  if (p.classList.contains('open')) {
+    populateBucketSelect('qaBucket');
+    populateStageSelect('qaStage');
   }
 }
+function closeQA() { document.getElementById('qaPanel').classList.remove('open'); }
 
-// ═══════════════════════════════════════════════
-// TABS
-// ═══════════════════════════════════════════════
-
-function switchTab(name, el) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  el.classList.add('active');
-  ['timeline','programs','pipelines','roster'].forEach(t => {
-    document.getElementById('tab-' + t).classList.toggle('hidden', t !== name);
-  });
-}
-
-// ═══════════════════════════════════════════════
-// TIMELINE TAB
-// ═══════════════════════════════════════════════
-
-function renderTimeline() {
-  renderQBar();
-  renderStages();
-  renderTaskBuckets();
-  renderComingDue();
-}
-
-function renderQBar() {
-  const bar = document.getElementById('qbar');
-  bar.innerHTML = QUARTER_COLORS.map(q =>
-    `<div class="qseg" style="flex:1;background:${q.color};color:#b0a898;font-size:9px">${q.label}</div>`
-  ).join('');
-}
-
-function renderStages() {
-  const list = document.getElementById('stageList');
-  list.innerHTML = STAGES.map((s, i) => {
-    const st = data.stageStatuses[i] || 'pending';
-    const labels = { pending: 'PENDING', active: 'IN PROGRESS', done: 'DONE', blocked: 'BLOCKED' };
-    return `<div class="stage ${st === 'active' ? 'active-stage' : ''} ${st === 'done' ? 'complete' : ''}"
-      onclick="cycleStage(${i})">
-      <span class="stage-num">${String(i+1).padStart(2,'0')}</span>
-      <span class="stage-name">${s}</span>
-      <span class="stage-status s-${st}">${labels[st]}</span>
-    </div>`;
-  }).join('');
-}
-
-function cycleStage(i) {
-  const order = ['pending','active','done','blocked'];
-  const cur = data.stageStatuses[i] || 'pending';
-  const next = order[(order.indexOf(cur) + 1) % order.length];
-  data.stageStatuses[i] = next;
-  saveData();
-  renderStages();
-}
-
-function renderTaskBuckets() {
-  const container = document.getElementById('taskBuckets');
-  container.innerHTML = data.buckets.map(b => {
-    const tasks = data.tasks.filter(t => t.bucket === b);
-    return `<div class="bucket">
-      <div class="bucket-title">
-        <span>${b.toUpperCase()} <span style="color:var(--text3)">(${tasks.length})</span></span>
-        <button class="btn btn-secondary btn-sm" onclick="deleteBucket('${b}')">✕</button>
-      </div>
-      ${tasks.length === 0 ? '<div style="font-size:11px;color:var(--text3);padding:8px 0">No tasks</div>' : ''}
-      ${tasks.map(t => `
-        <div class="task-item">
-          <div class="task-check ${t.done ? 'checked' : ''}" onclick="toggleTask('${t.id}')"></div>
-          <div style="flex:1">
-            <div class="task-text ${t.done ? 'done' : ''}">${t.text}</div>
-            ${t.due ? `<div class="task-meta">📅 ${t.due}${t.stage !== undefined ? ` · Stage ${t.stage+1}` : ''}</div>` : ''}
-            ${t.notes ? `<div class="task-meta" style="font-style:italic">${t.notes}</div>` : ''}
-          </div>
-          <button class="btn btn-secondary btn-sm" onclick="openEditTask('${t.id}')">✎</button>
-        </div>`).join('')}
-    </div>`;
-  }).join('');
-}
-
-function renderComingDue() {
-  const today = new Date();
-  const soon = data.tasks
-    .filter(t => !t.done && t.due)
-    .map(t => ({ ...t, d: new Date(t.due) }))
-    .filter(t => t.d >= today)
-    .sort((a,b) => a.d - b.d)
-    .slice(0, 6);
-  const el = document.getElementById('comingDue');
-  if (soon.length === 0) { el.innerHTML = '<div style="font-size:11px;color:var(--text3)">No upcoming due dates.</div>'; return; }
-  el.innerHTML = soon.map(t =>
-    `<div class="due-item">
-      <div style="font-size:12px">${t.text}</div>
-      <div class="row" style="margin-top:3px">
-        <span class="due-date">${t.due}</span>
-        <span class="due-label" style="margin-left:8px">${t.bucket}</span>
-      </div>
-    </div>`
-  ).join('');
-}
-
-function toggleTask(id) {
-  const t = data.tasks.find(x => x.id === id);
-  if (t) { t.done = !t.done; saveData(); renderTaskBuckets(); renderComingDue(); }
-}
-
-function deleteBucket(name) {
-  if (!confirm(`Remove bucket "${name}"? Tasks in it will be moved to the first bucket.`)) return;
-  data.tasks.forEach(t => { if (t.bucket === name) t.bucket = data.buckets[0] || 'General'; });
-  data.buckets = data.buckets.filter(b => b !== name);
-  saveData(); renderAll();
-}
-
-function deleteTask(id) {
-  data.tasks = data.tasks.filter(t => t.id !== id);
-  saveData(); closeModal('modalEditTask'); renderAll();
-}
-
-// ═══════════════════════════════════════════════
-// POPULATE SELECTS (shared helper — fixes BUG #1 and #2)
-// ═══════════════════════════════════════════════
-
-function populateBucketSelect(selectId) {
-  const sel = document.getElementById(selectId);
-  if (!sel) return;
-  sel.innerHTML = data.buckets.map(b => `<option value="${b}">${b}</option>`).join('');
-}
-
-function populateStageSelect(selectId, currentStage) {
-  const sel = document.getElementById(selectId);
-  if (!sel) return;
-  sel.innerHTML = STAGES.map((s, i) =>
-    `<option value="${i}" ${i === currentStage ? 'selected' : ''}>${i+1}. ${s}</option>`
-  ).join('');
-}
-
-// ═══════════════════════════════════════════════
-// ADD / EDIT TASK MODALS
-// ═══════════════════════════════════════════════
-
-function openAddTask() {
-  populateBucketSelect('tBucket');    // BUG FIX #1 pattern applied here too
-  populateStageSelect('tStage', 4);
-  document.getElementById('tTask').value = '';
-  document.getElementById('tDue').value = '';
-  document.getElementById('tNotes').value = '';
-  openModal('modalAddTask');
-}
-
-function saveTask() {
-  const text = document.getElementById('tTask').value.trim();
-  if (!text) return;
-  data.tasks.push({
+function addTask() {
+  const title = document.getElementById('qaTitle').value.trim();
+  if (!title) { alert('Title required'); return; }
+  D.tasks.push({
     id: 't' + Date.now(),
-    text,
-    bucket: document.getElementById('tBucket').value,
-    due: document.getElementById('tDue').value,
-    stage: parseInt(document.getElementById('tStage').value),
-    notes: document.getElementById('tNotes').value.trim(),
-    done: false
+    title,
+    due: document.getElementById('qaDue').value.trim(),
+    stage: parseInt(document.getElementById('qaStage').value) || 0,
+    bucket: document.getElementById('qaBucket').value,
+    notes: document.getElementById('qaNotes').value.trim(),
+    milestone: false
   });
-  saveData(); closeModal('modalAddTask'); renderAll();
+  saveLocal(); renderAll();
+  ['qaTitle','qaDue','qaNotes'].forEach(id => document.getElementById(id).value = '');
+  closeQA();
 }
 
 function openEditTask(id) {
-  const t = data.tasks.find(x => x.id === id);
+  const t = D.tasks.find(x => x.id === id);
   if (!t) return;
-  document.getElementById('etId').value = id;
-  document.getElementById('etTask').value = t.text;
+  document.getElementById('etId').value = t.id;
+  document.getElementById('etTitle').value = t.title;
   document.getElementById('etDue').value = t.due || '';
   document.getElementById('etNotes').value = t.notes || '';
-  populateBucketSelect('etBucket');   // BUG FIX #2: bucket field now populated
-  document.getElementById('etBucket').value = t.bucket;
-  populateStageSelect('etStage', t.stage || 0);
-  openModal('modalEditTask');
+  document.getElementById('etMilestone').value = t.milestone ? '1' : '0';
+  populateStageSelect('etStage', t.stage);
+  // FIX 2: populate bucket in edit modal with current value
+  populateBucketSelect('etBucket', t.bucket);
+  openModal('editTaskModal');
 }
 
 function saveEditTask() {
   const id = document.getElementById('etId').value;
-  const t = data.tasks.find(x => x.id === id);
+  const t = D.tasks.find(x => x.id === id);
   if (!t) return;
-  t.text = document.getElementById('etTask').value.trim();
-  t.bucket = document.getElementById('etBucket').value;
-  t.due = document.getElementById('etDue').value;
-  t.stage = parseInt(document.getElementById('etStage').value);
-  t.notes = document.getElementById('etNotes').value.trim();
-  saveData(); closeModal('modalEditTask'); renderAll();
+  t.title     = document.getElementById('etTitle').value.trim();
+  t.due       = document.getElementById('etDue').value.trim();
+  t.stage     = parseInt(document.getElementById('etStage').value) || 0;
+  t.bucket    = document.getElementById('etBucket').value;  // FIX 2
+  t.notes     = document.getElementById('etNotes').value.trim();
+  t.milestone = document.getElementById('etMilestone').value === '1';
+  saveLocal(); renderAll(); closeModal('editTaskModal');
+}
+
+function deleteTask() {
+  const id = document.getElementById('etId').value;
+  if (!confirm('Delete this task?')) return;
+  D.tasks = D.tasks.filter(t => t.id !== id);
+  saveLocal(); renderAll(); closeModal('editTaskModal');
 }
 
 function openMilestone() {
-  document.getElementById('msLabel').value = data.milestone.label;
-  document.getElementById('msDate').value = data.milestone.date;
-  openModal('modalMilestone');
+  openModal('milestoneModal');
 }
 
 function saveMilestone() {
-  data.milestone.label = document.getElementById('msLabel').value;
-  data.milestone.date = document.getElementById('msDate').value;
-  saveData(); closeModal('modalMilestone');
+  const title = document.getElementById('msTitle').value.trim();
+  const date  = document.getElementById('msDate').value.trim();
+  D.tasks.push({ id:'t'+Date.now(), title, due: date, stage: D.activeStage, bucket: 'Internal — BAS Proposal', notes:'', milestone: true });
+  saveLocal(); renderAll(); closeModal('milestoneModal');
 }
 
-// ═══════════════════════════════════════════════
-// PROGRAM MAP TAB
-// ═══════════════════════════════════════════════
+// ══════════════════════════════════════════════
+//  PIPELINES
+// ══════════════════════════════════════════════
+function renderBuckets() {
+  const container = document.getElementById('bucketsContainer');
+  const grouped = {};
+  D.buckets.forEach(b => { grouped[b.id] = { ...b, contacts: [] }; });
+  D.contacts.forEach(c => {
+    const bkt = D.buckets.find(b => b.name === c.bucket);
+    if (bkt) grouped[bkt.id].contacts.push(c);
+  });
 
-function renderPrograms() {
-  const cols = [
-    { title: 'Office Asst. Cert', cls: 'cred-cert', courses: COURSES.certs },
-    { title: 'Bookkeeping Cert', cls: 'cred-cert', courses: COURSES.bookkeeping },
-    { title: 'Acct Tech Cert', cls: 'cred-cert', courses: COURSES.accttech },
-    { title: 'AAS — Accounting', cls: 'cred-aas', courses: COURSES.aas },
-    { title: 'BAS-ACCT ✦', cls: 'cred-bas', courses: COURSES.bas },
-  ];
-  document.getElementById('stackGrid').innerHTML = cols.map(c =>
-    `<div class="cred-col">
-      <div class="cred-title ${c.cls}">${c.title}</div>
-      ${c.courses.map(x => `<div class="course-chip" onclick="showCourse('${x.code}','${x.name}','${x.desc}')">${x.code}<br><span style="font-size:10px;color:var(--text3)">${x.name}</span></div>`).join('')}
-    </div>`
-  ).join('');
-
-  document.getElementById('courseSeq').innerHTML = `
-    <div style="display:flex;flex-wrap:wrap;gap:8px">
-      ${COURSES.bas.map((c,i) => `
-        <div style="background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:8px 12px;min-width:160px;flex:1">
-          <div style="font-size:10px;color:var(--accent3)">${['FA','WI','SP','SP','FA','WI','SP','FA'][i] || 'TBD'} Year ${[1,1,2,2,2,3,3,3][i]||3}</div>
-          <div style="font-size:12px;font-weight:500;margin-top:3px">${c.code}</div>
-          <div style="font-size:11px;color:var(--text3)">${c.name}</div>
-        </div>`).join('')}
-    </div>`;
-}
-
-function showCourse(code, name, desc) {
-  document.getElementById('courseModalTitle').textContent = `${code}: ${name}`;
-  document.getElementById('courseModalBody').textContent = desc;
-  openModal('modalCourse');
-}
-
-// ═══════════════════════════════════════════════
-// PIPELINES TAB
-// ═══════════════════════════════════════════════
-
-function renderPipelines() {
-  const sections = ['internal', 'external'];
-  const labels = { internal: 'INTERNAL TO PIERCE', external: 'EXTERNAL TO PIERCE' };
-  document.getElementById('plContent').innerHTML = sections.map(sec => {
-    const buckets = data.plBuckets[sec] || [];
-    return `<div class="pl-section">
-      <div class="pl-section-title">${labels[sec]}</div>
-      <div class="pl-buckets">
-        ${buckets.map(b => {
-          const contacts = data.contacts.filter(c => c.bucket === sec && c.cat === b);
-          return `<div class="pl-bucket">
-            <div class="pl-bucket-header">
-              <span class="pl-bucket-name">${b}</span>
-              <button class="btn btn-danger btn-sm" onclick="removePlBucket('${sec}','${b}')">✕</button>
-            </div>
-            ${contacts.map(c => `
-              <div class="contact-item">
-                <div class="contact-name">${c.name}</div>
-                <div class="contact-role">${c.role}</div>
-                ${c.email ? `<div class="contact-role">${c.email}</div>` : ''}
-                <span class="contact-status cs-${c.status}">${c.status}</span>
-                ${c.notes ? `<div style="font-size:10px;color:var(--text3);margin-top:3px;font-style:italic">${c.notes}</div>` : ''}
-              </div>`).join('')}
-            ${contacts.length === 0 ? '<div style="font-size:10px;color:var(--text3);padding:4px 0">Empty</div>' : ''}
-          </div>`;
-        }).join('')}
+  container.innerHTML = Object.values(grouped).map(bkt => `
+    <div class="panel" style="margin-bottom:12px">
+      <div class="bucket-header">
+        <div>
+          <div class="bucket-title">${esc(bkt.name)}</div>
+          <div style="font-size:9px;color:var(--text3)">${bkt.type === 'internal' ? '◈ Internal' : '◉ External'} · ${bkt.contacts.length} contacts</div>
+        </div>
+        <div class="flex-row">
+          <button class="btn btn-sm btn-red" onclick="deleteBucket('${bkt.id}')">Remove Bucket</button>
+        </div>
       </div>
-    </div>`;
-  }).join('');
+      ${bkt.contacts.length ? bkt.contacts.map(c => `
+        <div class="contact-card">
+          <div>
+            <div class="cc-name">${esc(c.name)}</div>
+            <div class="cc-org">${esc(c.org)} ${c.title ? '· '+esc(c.title) : ''}</div>
+            ${c.email ? `<div style="font-size:10px;color:var(--accent2)">${esc(c.email)}</div>` : ''}
+            ${c.notes ? `<div style="font-size:10px;color:var(--text3);margin-top:3px">${esc(c.notes)}</div>` : ''}
+          </div>
+          <div class="flex-row" style="align-items:flex-start">
+            <span class="cc-status status-${c.status}">${c.status}</span>
+            <button class="btn btn-sm" onclick="deleteContact('${c.id}')">×</button>
+          </div>
+        </div>`).join('') : '<div style="font-size:10px;color:var(--text3);padding:8px">No contacts in this bucket yet.</div>'}
+    </div>`).join('');
 }
 
-function openAddBucket() {
-  document.getElementById('bName').value = '';
-  openModal('modalAddBucket');
-}
-
-function saveBucket() {
-  const name = document.getElementById('bName').value.trim();
-  const sec = document.getElementById('bSection').value;
-  if (!name) return;
-  if (!data.plBuckets[sec]) data.plBuckets[sec] = [];
-  data.plBuckets[sec].push(name);
-  saveData(); closeModal('modalAddBucket'); renderPipelines();
-}
-
-function removePlBucket(sec, name) {
-  if (!confirm(`Remove bucket "${name}"?`)) return;
-  data.plBuckets[sec] = (data.plBuckets[sec] || []).filter(b => b !== name);
-  data.contacts = data.contacts.filter(c => !(c.bucket === sec && c.cat === name));
-  saveData(); renderPipelines();
-}
-
+// FIX 1: openAddPL now calls populateBucketSelect
 function openAddPL() {
-  // BUG FIX #1: populate bucket select on modal open
-  const allBuckets = [
-    ...( data.plBuckets.internal || [] ).map(b => ({ label: `[Internal] ${b}`, sec: 'internal', cat: b })),
-    ...( data.plBuckets.external || [] ).map(b => ({ label: `[External] ${b}`, sec: 'external', cat: b }))
-  ];
-  const sel = document.getElementById('plCat');
-  sel.innerHTML = allBuckets.map(b =>
-    `<option value="${b.sec}||${b.cat}">${b.label}</option>`
-  ).join('');
-  document.getElementById('plName').value = '';
-  document.getElementById('plRole').value = '';
-  document.getElementById('plEmail').value = '';
-  document.getElementById('plNotes').value = '';
-  document.getElementById('plStatus').value = 'waiting';
-  openModal('modalAddPL');
+  ['plName','plOrg','plTitle','plEmail','plNotes'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('plStatus').value = 'active';
+  populateBucketSelect('plCat');   // ← THIS WAS THE BUG: was never called
+  openModal('addPLModal');
 }
 
 function saveContact() {
   const name = document.getElementById('plName').value.trim();
-  if (!name) return;
-  const val = document.getElementById('plCat').value;
-  const [sec, cat] = val.split('||');
-  data.contacts.push({
+  if (!name) { alert('Name required'); return; }
+  D.contacts.push({
     id: 'c' + Date.now(),
     name,
-    role: document.getElementById('plRole').value.trim(),
-    email: document.getElementById('plEmail').value.trim(),
+    org:    document.getElementById('plOrg').value.trim(),
+    title:  document.getElementById('plTitle').value.trim(),
+    email:  document.getElementById('plEmail').value.trim(),
     status: document.getElementById('plStatus').value,
-    bucket: sec,
-    cat: cat,
-    notes: document.getElementById('plNotes').value.trim()
+    bucket: document.getElementById('plCat').value,
+    notes:  document.getElementById('plNotes').value.trim()
   });
-  saveData(); closeModal('modalAddPL'); renderPipelines();
+  saveLocal(); renderBuckets(); closeModal('addPLModal');
 }
 
-// ═══════════════════════════════════════════════
-// ROSTER TAB
-// ═══════════════════════════════════════════════
+function openAddBucket() { openModal('addBucketModal'); }
 
+function saveBucket() {
+  const name = document.getElementById('bkName').value.trim();
+  if (!name) { alert('Name required'); return; }
+  if (D.buckets.find(b => b.name === name)) { alert('Bucket already exists'); return; }
+  D.buckets.push({ id:'b'+Date.now(), name, type: document.getElementById('bkType').value });
+  saveLocal(); renderBuckets(); closeModal('addBucketModal');
+  document.getElementById('bkName').value = '';
+}
+
+function deleteBucket(id) {
+  const bkt = D.buckets.find(b => b.id === id);
+  if (!bkt) return;
+  if (!confirm(`Delete bucket "${bkt.name}" and all its contacts?`)) return;
+  D.contacts = D.contacts.filter(c => c.bucket !== bkt.name);
+  D.buckets = D.buckets.filter(b => b.id !== id);
+  saveLocal(); renderBuckets();
+}
+
+function deleteContact(id) {
+  D.contacts = D.contacts.filter(c => c.id !== id);
+  saveLocal(); renderBuckets();
+}
+
+// ══════════════════════════════════════════════
+//  ROSTER
+// ══════════════════════════════════════════════
 function renderRoster() {
-  document.getElementById('rosterGrid').innerHTML = data.roster.map(r =>
-    `<div class="roster-card">
-      <div class="roster-name">${r.name}</div>
-      <div class="roster-role">${r.role}</div>
-      ${r.email ? `<div class="roster-email">${r.email}</div>` : ''}
-      ${r.notes ? `<div style="font-size:10px;color:var(--text3);margin-top:6px">${r.notes}</div>` : ''}
-      <div style="margin-top:8px">
-        <button class="btn btn-danger btn-sm" onclick="deleteRosterMember('${r.id}')">Remove</button>
+  const grid = document.getElementById('rosterGrid');
+  grid.innerHTML = D.roster.map(r => `
+    <div class="roster-card">
+      <div class="avatar">${r.name.charAt(0)}</div>
+      <div style="flex:1">
+        <div class="rc-name">${esc(r.name)}</div>
+        <div class="rc-role">${esc(r.role)}</div>
+        <div class="rc-email">${esc(r.email)}</div>
       </div>
-    </div>`
-  ).join('');
+      <button class="btn btn-sm btn-red" onclick="deleteRoster('${r.id}')">×</button>
+    </div>`).join('');
 }
 
-function openAddRoster() {
-  document.getElementById('rName').value = '';
-  document.getElementById('rRole').value = '';
-  document.getElementById('rEmail').value = '';
-  document.getElementById('rNotes').value = '';
-  openModal('modalAddRoster');
+function openAddRoster() { openModal('addRosterModal'); }
+
+function saveRoster() {
+  const name = document.getElementById('rmName').value.trim();
+  if (!name) { alert('Name required'); return; }
+  D.roster.push({ id:'r'+Date.now(), name, role: document.getElementById('rmRole').value.trim(), email: document.getElementById('rmEmail').value.trim() });
+  saveLocal(); renderRoster(); closeModal('addRosterModal');
 }
 
-function saveRosterMember() {
-  const name = document.getElementById('rName').value.trim();
-  if (!name) return;
-  data.roster.push({
-    id: 'r' + Date.now(),
-    name,
-    role: document.getElementById('rRole').value.trim(),
-    email: document.getElementById('rEmail').value.trim(),
-    notes: document.getElementById('rNotes').value.trim()
-  });
-  saveData(); closeModal('modalAddRoster'); renderRoster();
+function deleteRoster(id) {
+  D.roster = D.roster.filter(r => r.id !== id);
+  saveLocal(); renderRoster();
 }
 
-function deleteRosterMember(id) {
-  if (!confirm('Remove this team member?')) return;
-  data.roster = data.roster.filter(r => r.id !== id);
-  saveData(); renderRoster();
+// ══════════════════════════════════════════════
+//  PROGRAM MAP
+// ══════════════════════════════════════════════
+function renderMap() {
+  const cols = [
+    { label:'Level 1', creds: [{ name:'Office Assistant Certificate', credits:'21 cr', proposed:false }] },
+    { label:'Level 2', creds: [{ name:'Bookkeeping Certificate', credits:'32 cr', proposed:false }] },
+    { label:'Level 3', creds: [{ name:'Accounting Tech Certificate', credits:'48 cr', proposed:false }] },
+    { label:'Level 4', creds: [{ name:'AAS in Accounting', credits:'90 cr', proposed:false }] },
+    { label:'Level 5 (Proposed)', creds: [{ name:'BAS in Accounting', credits:'90 cr upper-div', proposed:true }] },
+  ];
+  document.getElementById('stackMap').innerHTML = cols.map(col => `
+    <div class="stack-col">
+      <div class="stack-col-title">${col.label}</div>
+      ${col.creds.map(c => `<div class="cred-block ${c.proposed?'proposed':''}">
+        <div class="cb-name">${c.name}</div>
+        <div class="cb-credits">${c.credits}</div>
+      </div>`).join('')}
+    </div>`).join('');
+
+  const courses = [
+    { code:'ACCT 301', title:'Intermediate Financial Accounting I', credits:5 },
+    { code:'ACCT 302', title:'Intermediate Financial Accounting II', credits:5 },
+    { code:'ACCT 310', title:'Advanced Taxation', credits:5 },
+    { code:'ACCT 320', title:'Cost Accounting', credits:5 },
+    { code:'ACCT 410', title:'Governmental & Nonprofit Accounting', credits:5 },
+    { code:'ACCT 420', title:'Audit & Assurance Services', credits:5 },
+    { code:'ACCT 450', title:'Advanced Accounting Topics', credits:5 },
+    { code:'ACCT 490', title:'Capstone: Applied Analysis', credits:5 },
+  ];
+  document.getElementById('courseGrid').innerHTML = courses.map(c => `
+    <div class="panel" style="margin-bottom:0">
+      <div style="font-size:10px;color:var(--accent2);margin-bottom:4px">${c.code} · ${c.credits} cr</div>
+      <div style="font-size:12px;color:var(--text)">${c.title}</div>
+    </div>`).join('');
 }
 
-// ═══════════════════════════════════════════════
-// ACTION BRIEF
-// ═══════════════════════════════════════════════
-
-function openActionBrief() {
-  document.getElementById('briefFocus').value = '';
-  document.getElementById('briefOutput').textContent = 'Brief will appear here. Copy and paste into Claude to get a drafted document, email, or action plan.';
-  openModal('modalBrief');
-}
-
+// ══════════════════════════════════════════════
+//  ACTION BRIEF
+// ══════════════════════════════════════════════
 function generateBrief() {
-  const focus = document.getElementById('briefFocus').value.trim() || 'general program management';
-  const openTasks = data.tasks.filter(t => !t.done).slice(0, 6);
-  const upcoming = data.tasks.filter(t => !t.done && t.due).sort((a,b) => a.due.localeCompare(b.due)).slice(0,3);
-  const activeStages = Object.entries(data.stageStatuses).filter(([,v]) => v === 'active').map(([k]) => STAGES[k]);
-
-  const brief = `PIERCE COLLEGE — ACCT DEPARTMENT ACTION BRIEF
+  const overdue = D.tasks.filter(t => t.due && new Date(t.due) < new Date());
+  const soon = D.tasks.filter(t => {
+    if (!t.due) return false;
+    const d = new Date(t.due), n = new Date();
+    return d >= n && d <= new Date(n.getTime() + 14*24*60*60*1000);
+  });
+  const stage = STAGES[D.activeStage];
+  const brief = `PIERCE ACCT COMMAND CENTER — ACTION BRIEF
 Generated: ${new Date().toLocaleDateString()}
-Focus: ${focus}
-Milestone: ${data.milestone.label} (${data.milestone.date})
+Current BAS-ACCT Stage: ${stage} (${D.activeStage+1}/${STAGES.length})
 
-ACTIVE APPROVAL STAGES:
-${activeStages.length ? activeStages.map(s => `  • ${s}`).join('\n') : '  (none active)'}
+OVERDUE TASKS (${overdue.length}):
+${overdue.length ? overdue.map(t => `  · ${t.title} [was due ${t.due}]`).join('\n') : '  None'}
 
-OPEN TASKS (top ${openTasks.length}):
-${openTasks.map(t => `  • [${t.bucket}] ${t.text}${t.due ? ' — due ' + t.due : ''}`).join('\n')}
+DUE IN NEXT 14 DAYS (${soon.length}):
+${soon.length ? soon.map(t => `  · ${t.title} [due ${t.due}]`).join('\n') : '  None'}
 
-NEAREST DUE DATES:
-${upcoming.map(t => `  • ${t.due}: ${t.text}`).join('\n')}
+ALL OPEN TASKS (${D.tasks.filter(t=>t.stage < STAGES.length-1).length}):
+${D.tasks.filter(t=>t.stage < STAGES.length-1).map(t => `  [${STAGES[t.stage]}] ${t.title}`).join('\n')}
 
-CONTEXT: BAS-ACCT proposal for SBCTC approval. Pierce College, Lakewood WA.
-AAS in Accounting program continues in parallel.
+PIPELINE SUMMARY:
+${D.buckets.map(b => {
+  const n = D.contacts.filter(c => c.bucket === b.name).length;
+  return `  ${b.name}: ${n} contacts`;
+}).join('\n')}
+
+ROSTER: ${D.roster.map(r => r.name).join(', ')}
 
 ---
-INSTRUCTIONS FOR CLAUDE:
-Using this brief, please help me with: ${focus}`;
+Paste this brief into Claude and say: "Here's my current state. What should I prioritize?"`;
 
-  document.getElementById('briefOutput').textContent = brief;
+  document.getElementById('briefContent').textContent = brief;
+  document.getElementById('briefPanel').classList.add('open');
 }
 
 function copyBrief() {
-  const text = document.getElementById('briefOutput').textContent;
-  navigator.clipboard.writeText(text).then(() => alert('Brief copied to clipboard.'));
+  navigator.clipboard.writeText(document.getElementById('briefContent').textContent).then(() => {
+    const msg = document.getElementById('copiedMsg');
+    msg.style.display = 'inline';
+    setTimeout(() => msg.style.display = 'none', 2000);
+  });
+}
+function closeBrief() { document.getElementById('briefPanel').classList.remove('open'); }
+
+// ══════════════════════════════════════════════
+//  HELPERS
+// ══════════════════════════════════════════════
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+function populateBucketSelect(selectId, selected) {
+  const el = document.getElementById(selectId);
+  if (!el) return;
+  el.innerHTML = D.buckets.map(b =>
+    `<option value="${esc(b.name)}" ${b.name === selected ? 'selected' : ''}>${esc(b.name)}</option>`
+  ).join('');
+  if (selected) el.value = selected;
 }
 
-// ═══════════════════════════════════════════════
-// MODAL HELPERS
-// ═══════════════════════════════════════════════
-
-function openModal(id) {
-  document.getElementById(id).classList.remove('hidden');
+function populateStageSelect(selectId, selected) {
+  const el = document.getElementById(selectId);
+  if (!el) return;
+  el.innerHTML = STAGES.map((s,i) =>
+    `<option value="${i}" ${i === selected ? 'selected' : ''}>${s}</option>`
+  ).join('');
+  if (selected !== undefined) el.value = selected;
 }
 
-function closeModal(id) {
-  document.getElementById(id).classList.add('hidden');
+function esc(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-// Close on overlay click
-document.querySelectorAll('.modal-overlay').forEach(overlay => {
-  overlay.addEventListener('click', function(e) {
-    if (e.target === this) this.classList.add('hidden');
+// ══════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  populateStageSelect('qaStage');
+  populateBucketSelect('qaBucket');
+  renderAll();
+  // Warn before closing if there are unsaved (unexported) changes
+  window.addEventListener('beforeunload', (e) => {
+    if (_dirty) {
+      e.preventDefault();
+      e.returnValue = 'You have changes that haven\'t been exported. Export JSON before closing to share with teammates.';
+    }
   });
 });
-
-// ═══════════════════════════════════════════════
-// RENDER ALL
-// ═══════════════════════════════════════════════
-
-function renderAll() {
-  renderTimeline();
-  renderPrograms();
-  renderPipelines();
-  renderRoster();
-}
-
-// ═══════════════════════════════════════════════
-// INIT
-// ═══════════════════════════════════════════════
-
-loadData();
-renderAll();
 </script>
 </body>
 </html>
