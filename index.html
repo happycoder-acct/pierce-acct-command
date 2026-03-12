@@ -1003,37 +1003,163 @@ function deleteRoster(id) {
 //  PROGRAM MAP
 // ══════════════════════════════════════════════
 function renderMap() {
+  // ── Credential Stackability with expanded course lists ──
   const cols = [
-    { label:'Level 1', creds: [{ name:'Office Assistant Certificate', credits:'21 cr', proposed:false }] },
-    { label:'Level 2', creds: [{ name:'Bookkeeping Certificate', credits:'32 cr', proposed:false }] },
-    { label:'Level 3', creds: [{ name:'Accounting Tech Certificate', credits:'48 cr', proposed:false }] },
-    { label:'Level 4', creds: [{ name:'AAS in Accounting', credits:'90 cr', proposed:false }] },
-    { label:'Level 5 (Proposed)', creds: [{ name:'BAS in Accounting', credits:'90 cr upper-div', proposed:true }] },
+    {
+      label: 'Level 1',
+      creds: [{
+        name: 'Office Assistant Certificate',
+        credits: '21 cr',
+        proposed: false,
+        courses: [
+          'ACCT 110 – Bookkeeping Fundamentals (5 cr)',
+          'BUSA 101 – Introduction to Business (5 cr)',
+          'OFAD 110 – Business Keyboarding (3 cr)',
+          'OFAD 120 – Office Procedures (5 cr)',
+          'OFAD 130 – Business Communications (3 cr)',
+        ]
+      }]
+    },
+    {
+      label: 'Level 2',
+      creds: [{
+        name: 'Bookkeeping Certificate',
+        credits: '32 cr',
+        proposed: false,
+        courses: [
+          'ACCT 110 – Bookkeeping Fundamentals (5 cr)',
+          'ACCT 111 – Computerized Bookkeeping (5 cr)',
+          'ACCT 112 – Payroll Accounting (5 cr)',
+          'ACCT 113 – Income Tax Preparation (5 cr)',
+          'BUSA 101 – Introduction to Business (5 cr)',
+          'BUSA 201 – Business Law (5 cr)',
+          'OFAD 130 – Business Communications (2 cr)',
+        ]
+      }]
+    },
+    {
+      label: 'Level 3',
+      creds: [{
+        name: 'Accounting Tech Certificate',
+        credits: '48 cr',
+        proposed: false,
+        courses: [
+          'ACCT 110 – Bookkeeping Fundamentals (5 cr)',
+          'ACCT 111 – Computerized Bookkeeping (5 cr)',
+          'ACCT 112 – Payroll Accounting (5 cr)',
+          'ACCT 113 – Income Tax Preparation (5 cr)',
+          'ACCT 201 – Financial Accounting I (5 cr)',
+          'ACCT 202 – Financial Accounting II (5 cr)',
+          'ACCT 203 – Managerial Accounting (5 cr)',
+          'BUSA 101 – Introduction to Business (5 cr)',
+          'BUSA 201 – Business Law (5 cr)',
+          'CIS 100 – Introduction to Computers (3 cr)',
+        ]
+      }]
+    },
+    {
+      label: 'Level 4',
+      creds: [{
+        name: 'AAS in Accounting',
+        credits: '90 cr',
+        proposed: false,
+        note: '✓ Updated for Fall 2007',
+        courses: [
+          'ENGL 101 – English Composition (5 cr)',
+          'MATH 107 – Business Mathematics (5 cr)',
+          'CMST 220 – Business Communication (5 cr)',
+          'ACCT 110 – Bookkeeping Fundamentals (5 cr)',
+          'ACCT 111 – Computerized Bookkeeping (5 cr)',
+          'ACCT 112 – Payroll Accounting (5 cr)',
+          'ACCT 113 – Income Tax Preparation (5 cr)',
+          'ACCT 201 – Financial Accounting I (5 cr) · Pre-req: ACCT 110',
+          'ACCT 202 – Financial Accounting II (5 cr) · Pre-req: ACCT 201',
+          'ACCT 203 – Managerial Accounting (5 cr) · Pre-req: ACCT 201',
+          'BUSA 101 – Introduction to Business (5 cr)',
+          'BUSA 201 – Business Law (5 cr)',
+          'CIS 100 – Introduction to Computers (3 cr)',
+          'ECON 201 – Principles of Economics I (5 cr)',
+          'Electives (17 cr)',
+        ]
+      }]
+    },
+    {
+      label: 'Level 5 (Proposed)',
+      creds: [{
+        name: 'BAS in Accounting',
+        credits: '90 cr upper-div',
+        proposed: true,
+        courses: [
+          'ACCT 301 – Intermediate Financial Accounting I (5 cr)',
+          'ACCT 302 – Intermediate Financial Accounting II (5 cr)',
+          'ACCT 310 – Advanced Taxation (5 cr)',
+          'ACCT 320 – Cost Accounting (5 cr)',
+          'ACCT 410 – Governmental & Nonprofit Acctg (5 cr)',
+          'ACCT 420 – Audit & Assurance Services (5 cr)',
+          'ACCT 450 – Advanced Accounting Topics (5 cr)',
+          'ACCT 490 – Capstone: Applied Analysis (5 cr)',
+          'General Education Electives (40 cr)',
+        ]
+      }]
+    },
   ];
-  document.getElementById('stackMap').innerHTML = cols.map(col => `
-    <div class="stack-col">
-      <div class="stack-col-title">${col.label}</div>
-      ${col.creds.map(c => `<div class="cred-block ${c.proposed?'proposed':''}">
-        <div class="cb-name">${c.name}</div>
-        <div class="cb-credits">${c.credits}</div>
-      </div>`).join('')}
-    </div>`).join('');
 
+  document.getElementById('stackMap').innerHTML = cols.map(col => `
+    <div class="stack-col" style="min-width:210px">
+      <div class="stack-col-title">${col.label}</div>
+      ${col.creds.map(c => `
+        <div class="cred-block ${c.proposed ? 'proposed' : ''}" style="cursor:default">
+          <div class="cb-name" style="font-weight:600;margin-bottom:4px">${c.name}</div>
+          <div class="cb-credits" style="margin-bottom:6px;color:var(--accent)">${c.credits}</div>
+          ${c.note ? `<div style="font-size:9px;color:var(--green);margin-bottom:6px">${c.note}</div>` : ''}
+          <ul style="list-style:none;padding:0;margin:0">
+            ${c.courses.map(course => `
+              <li style="font-size:9px;color:var(--text2);padding:2px 0;border-bottom:1px solid var(--border)">${course}</li>
+            `).join('')}
+          </ul>
+        </div>
+      `).join('')}
+    </div>
+  `).join('');
+
+  // ── Pre-Req Info for ACCT classes (updated Fall 2007) ──
   const courses = [
-    { code:'ACCT 301', title:'Intermediate Financial Accounting I', credits:5 },
-    { code:'ACCT 302', title:'Intermediate Financial Accounting II', credits:5 },
-    { code:'ACCT 310', title:'Advanced Taxation', credits:5 },
-    { code:'ACCT 320', title:'Cost Accounting', credits:5 },
-    { code:'ACCT 410', title:'Governmental & Nonprofit Accounting', credits:5 },
-    { code:'ACCT 420', title:'Audit & Assurance Services', credits:5 },
-    { code:'ACCT 450', title:'Advanced Accounting Topics', credits:5 },
-    { code:'ACCT 490', title:'Capstone: Applied Analysis', credits:5 },
+    { code:'ACCT 110', title:'Bookkeeping Fundamentals',         credits:5, prereq:'None',                                    notes:'Entry-level; open to all students',                        isNew:false },
+    { code:'ACCT 111', title:'Computerized Bookkeeping',         credits:5, prereq:'ACCT 110 (or concurrent)',                 notes:'Uses QuickBooks; may be taken concurrently with ACCT 110', isNew:false },
+    { code:'ACCT 112', title:'Payroll Accounting',               credits:5, prereq:'ACCT 110',                                 notes:'Must complete ACCT 110 first',                             isNew:false },
+    { code:'ACCT 113', title:'Income Tax Preparation',           credits:5, prereq:'ACCT 110',                                 notes:'Must complete ACCT 110 first',                             isNew:false },
+    { code:'ACCT 201', title:'Financial Accounting I',           credits:5, prereq:'ACCT 110 or instructor permission',        notes:'New pre-req effective Fall 2007',                          isNew:true  },
+    { code:'ACCT 202', title:'Financial Accounting II',          credits:5, prereq:'ACCT 201',                                 notes:'New pre-req effective Fall 2007',                          isNew:true  },
+    { code:'ACCT 203', title:'Managerial Accounting',            credits:5, prereq:'ACCT 201',                                 notes:'New pre-req effective Fall 2007',                          isNew:true  },
+    { code:'ACCT 301', title:'Intermediate Financial Acctg I',   credits:5, prereq:'ACCT 202 with grade ≥ C',            notes:'BAS upper-div; grade minimum required',                   isNew:false },
+    { code:'ACCT 302', title:'Intermediate Financial Acctg II',  credits:5, prereq:'ACCT 301 with grade ≥ C',            notes:'BAS upper-div',                                           isNew:false },
+    { code:'ACCT 310', title:'Advanced Taxation',                credits:5, prereq:'ACCT 201 and ACCT 113',                   notes:'BAS upper-div',                                           isNew:false },
+    { code:'ACCT 320', title:'Cost Accounting',                  credits:5, prereq:'ACCT 203',                                 notes:'BAS upper-div',                                           isNew:false },
+    { code:'ACCT 410', title:'Governmental & Nonprofit Acctg',   credits:5, prereq:'ACCT 301',                                 notes:'BAS upper-div',                                           isNew:false },
+    { code:'ACCT 420', title:'Audit & Assurance Services',       credits:5, prereq:'ACCT 302',                                 notes:'BAS upper-div',                                           isNew:false },
+    { code:'ACCT 450', title:'Advanced Accounting Topics',       credits:5, prereq:'ACCT 302 and ACCT 320',                   notes:'BAS upper-div',                                           isNew:false },
+    { code:'ACCT 490', title:'Capstone: Applied Analysis',       credits:5, prereq:'Completion of 20 upper-div ACCT credits', notes:'Final quarter; taken last',                               isNew:false },
   ];
-  document.getElementById('courseGrid').innerHTML = courses.map(c => `
-    <div class="panel" style="margin-bottom:0">
-      <div style="font-size:10px;color:var(--accent2);margin-bottom:4px">${c.code} · ${c.credits} cr</div>
-      <div style="font-size:12px;color:var(--text)">${c.title}</div>
-    </div>`).join('');
+
+  document.getElementById('courseGrid').innerHTML = `
+    <div style="grid-column:1/-1;margin-bottom:12px">
+      <div style="font-size:11px;color:var(--text2);background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:10px">
+        <strong style="color:var(--accent)">Pre-Requisite Reference</strong> &nbsp;|&nbsp;
+        Classes marked <strong style="color:var(--red)">★ NEW PRE-REQ</strong> have new prerequisites added effective <strong style="color:var(--red)">Fall 2007</strong>.
+      </div>
+    </div>
+    ${courses.map(c => `
+      <div class="panel" style="margin-bottom:0;border-left:3px solid ${c.isNew ? 'var(--red)' : 'var(--border)'}">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px">
+          <div style="font-size:10px;color:var(--accent2)">${c.code} · ${c.credits} cr</div>
+          ${c.isNew ? '<span style=\"font-size:9px;color:var(--red)\">★ NEW PRE-REQ (Fall 2007)</span>' : ''}
+        </div>
+        <div style="font-size:12px;color:var(--text);margin-bottom:6px">${c.title}</div>
+        <div style="font-size:10px;color:var(--text3)"><strong style="color:var(--accent)">Pre-req:</strong> ${c.prereq}</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:2px;font-style:italic">${c.notes}</div>
+      </div>
+    `).join('')}
+  `;
 }
 
 // ══════════════════════════════════════════════
