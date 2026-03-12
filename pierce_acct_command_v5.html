@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pierce ACCT Command Center</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;1,9..144,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0e0f12;
+  --bg2: #15161b;
+  --bg3: #1c1d24;
+  --border: #2a2b35;
+  --accent: #c8a96e;
+  --accent2: #7eb8c9;
+  --accent3: #9b8ecf;
+  --green: #6db87a;
+  --red: #c96e6e;
+  --yellow: #c9b96e;
+  --text: #e8e6df;
+  --text2: #9a9890;
+  --text3: #5a5855;
+  --mono: 'DM Mono', monospace;
+  --serif: 'Fraunces', serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: var(--mono); font-size: 13px; line-height: 1.5; min-height: 100vh; }
+
+/* HEADER */
+.header { background: var(--bg2); border-bottom: 1px solid var(--border); padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+.header-title { font-family: var(--serif); font-size: 18px; font-weight: 600; color: var(--accent); letter-spacing: -0.3px; }
+.header-sub { font-size: 11px; color: var(--text3); margin-top: 1px; }
+.header-right { display: flex; align-items: center; gap: 12px; }
+.sync-status { font-size: 11px; padding: 3px 10px; border-radius: 20px; }
+.sync-ok { background: rgba(109,184,122,0.15); color: var(--green); border: 1px solid rgba(109,184,122,0.3); }
+.sync-saving { background: rgba(201,185,110,0.15); color: var(--yellow); border: 1px solid rgba(201,185,110,0.3); }
+.sync-error { background: rgba(201,110,110,0.15); color: var(--red); border: 1px solid rgba(201,110,110,0.3); }
+.lock-banner { background: rgba(155,142,207,0.15); border: 1px solid rgba(155,142,207,0.3); color: var(--accent3); font-size: 11px; padding: 3px 10px; border-radius: 20px; }
+
+/* TABS */
+.tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border); background: var(--bg2); padding: 0 20px; }
+.tab { padding: 10px 18px; font-family: var(--mono); font-size: 12px; color: var(--text3); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.15s; letter-spacing: 0.3px; }
+.tab:hover { color: var(--text2); }
+.tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* MAIN */
+.main { padding: 20px; max-width: 1400px; margin: 0 auto; }
+
+/* CARDS */
+.card { background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; padding: 16px; margin-bottom: 16px; }
+.card-title { font-family: var(--serif); font-size: 14px; font-weight: 600; color: var(--accent); margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; }
+
+/* BUTTONS */
+.btn { font-family: var(--mono); font-size: 11px; padding: 5px 12px; border-radius: 4px; border: none; cursor: pointer; transition: all 0.15s; letter-spacing: 0.3px; }
+.btn-primary { background: var(--accent); color: var(--bg); font-weight: 500; }
+.btn-primary:hover { background: #d4b97e; }
+.btn-secondary { background: var(--bg3); color: var(--text2); border: 1px solid var(--border); }
+.btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+.btn-danger { background: rgba(201,110,110,0.15); color: var(--red); border: 1px solid rgba(201,110,110,0.3); }
+.btn-danger:hover { background: rgba(201,110,110,0.25); }
+.btn-green { background: rgba(109,184,122,0.15); color: var(--green); border: 1px solid rgba(109,184,122,0.3); }
+.btn-green:hover { background: rgba(109,184,122,0.25); }
+.btn-sm { padding: 3px 8px; font-size: 10px; }
+
+/* GRID */
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+/* TIMELINE TAB */
+.timeline-stages { display: flex; flex-direction: column; gap: 6px; }
+.stage { display: flex; align-items: center; gap: 10px; padding: 8px 12px; background: var(--bg3); border-radius: 4px; border: 1px solid var(--border); cursor: pointer; transition: all 0.15s; }
+.stage:hover { border-color: var(--accent2); }
+.stage.active-stage { border-color: var(--accent); background: rgba(200,169,110,0.08); }
+.stage.complete { border-color: var(--green); opacity: 0.7; }
+.stage-num { font-size: 10px; color: var(--text3); min-width: 22px; }
+.stage-name { flex: 1; font-size: 12px; }
+.stage-status { font-size: 10px; padding: 2px 7px; border-radius: 20px; }
+.s-pending { background: rgba(90,88,85,0.3); color: var(--text3); }
+.s-active { background: rgba(200,169,110,0.2); color: var(--accent); }
+.s-done { background: rgba(109,184,122,0.2); color: var(--green); }
+.s-blocked { background: rgba(201,110,110,0.2); color: var(--red); }
+
+/* QUARTER BAR */
+.qbar { display: flex; height: 32px; border-radius: 4px; overflow: hidden; border: 1px solid var(--border); margin-bottom: 12px; }
+.qseg { display: flex; align-items: center; justify-content: center; font-size: 10px; letter-spacing: 0.3px; transition: all 0.2s; }
+.qseg:hover { filter: brightness(1.2); }
+
+/* TASK BUCKETS */
+.bucket { background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; padding: 12px; }
+.bucket-title { font-size: 11px; color: var(--text3); letter-spacing: 0.5px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; }
+.task-item { padding: 7px 9px; background: var(--bg2); border: 1px solid var(--border); border-radius: 4px; margin-bottom: 5px; display: flex; align-items: flex-start; gap: 8px; }
+.task-item:hover { border-color: var(--accent2); }
+.task-check { width: 14px; height: 14px; border: 1px solid var(--border); border-radius: 2px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; transition: all 0.15s; }
+.task-check.checked { background: var(--green); border-color: var(--green); }
+.task-check.checked::after { content: '✓'; font-size: 9px; color: var(--bg); }
+.task-text { flex: 1; font-size: 12px; line-height: 1.4; }
+.task-text.done { text-decoration: line-through; color: var(--text3); }
+.task-meta { font-size: 10px; color: var(--text3); margin-top: 2px; }
+.task-actions { display: flex; gap: 4px; flex-shrink: 0; }
+
+/* COMING DUE */
+.due-item { padding: 7px 9px; background: var(--bg3); border-radius: 4px; margin-bottom: 5px; border-left: 2px solid var(--accent); }
+.due-label { font-size: 10px; color: var(--text3); }
+.due-date { font-size: 11px; color: var(--accent); }
+
+/* PROGRAM MAP TAB */
+.stack-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+.cred-col { background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; padding: 12px; }
+.cred-title { font-family: var(--serif); font-size: 13px; font-weight: 600; margin-bottom: 8px; }
+.cred-cert { color: var(--accent3); }
+.cred-aas { color: var(--accent2); }
+.cred-bas { color: var(--accent); }
+.course-chip { padding: 4px 8px; background: var(--bg2); border: 1px solid var(--border); border-radius: 3px; margin-bottom: 4px; font-size: 11px; cursor: pointer; transition: all 0.15s; }
+.course-chip:hover { border-color: var(--accent); color: var(--accent); }
+.arrow-col { display: flex; align-items: center; justify-content: center; color: var(--text3); font-size: 18px; }
+
+/* PIPELINES TAB */
+.pl-section { margin-bottom: 20px; }
+.pl-section-title { font-size: 11px; color: var(--text3); letter-spacing: 0.6px; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+.pl-buckets { display: flex; flex-wrap: wrap; gap: 12px; }
+.pl-bucket { background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; padding: 12px; min-width: 220px; flex: 1; }
+.pl-bucket-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.pl-bucket-name { font-size: 12px; font-weight: 500; color: var(--accent2); }
+.contact-item { padding: 7px 9px; background: var(--bg2); border: 1px solid var(--border); border-radius: 4px; margin-bottom: 5px; }
+.contact-name { font-size: 12px; }
+.contact-role { font-size: 10px; color: var(--text3); }
+.contact-status { font-size: 10px; padding: 1px 6px; border-radius: 20px; display: inline-block; margin-top: 3px; }
+.cs-waiting { background: rgba(201,185,110,0.15); color: var(--yellow); }
+.cs-active { background: rgba(109,184,122,0.15); color: var(--green); }
+.cs-blocked { background: rgba(201,110,110,0.15); color: var(--red); }
+
+/* ROSTER TAB */
+.roster-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+.roster-card { background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; padding: 14px; }
+.roster-name { font-family: var(--serif); font-size: 14px; font-weight: 600; margin-bottom: 3px; }
+.roster-role { font-size: 11px; color: var(--accent2); margin-bottom: 6px; }
+.roster-email { font-size: 10px; color: var(--text3); }
+
+/* ACTION BRIEF */
+.brief-output { background: var(--bg3); border: 1px solid var(--border); border-radius: 4px; padding: 12px; font-size: 11px; line-height: 1.6; white-space: pre-wrap; min-height: 80px; color: var(--text2); }
+
+/* MODAL */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(3px); }
+.modal { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 20px; min-width: 380px; max-width: 540px; width: 90%; max-height: 80vh; overflow-y: auto; }
+.modal-title { font-family: var(--serif); font-size: 16px; font-weight: 600; color: var(--accent); margin-bottom: 16px; }
+.form-group { margin-bottom: 12px; }
+.form-label { font-size: 11px; color: var(--text3); letter-spacing: 0.4px; margin-bottom: 4px; display: block; }
+.form-input, .form-select, .form-textarea { width: 100%; background: var(--bg3); border: 1px solid var(--border); border-radius: 4px; padding: 7px 10px; font-family: var(--mono); font-size: 12px; color: var(--text); outline: none; transition: border-color 0.15s; }
+.form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--accent); }
+.form-select { cursor: pointer; }
+.form-textarea { resize: vertical; min-height: 80px; }
+.form-select option { background: var(--bg2); }
+.modal-footer { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border); }
+
+/* EXPORT/IMPORT BAR */
+.data-bar { display: flex; gap: 8px; align-items: center; background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; padding: 10px 14px; margin-bottom: 16px; flex-wrap: wrap; }
+.data-bar-label { font-size: 11px; color: var(--text3); flex: 1; }
+
+/* MISC */
+.badge { font-size: 10px; padding: 1px 6px; border-radius: 20px; }
+.hidden { display: none !important; }
+.sep { width: 1px; background: var(--border); height: 20px; margin: 0 4px; }
+.row { display: flex; align-items: center; gap: 8px; }
+.ml-auto { margin-left: auto; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <div class="header-title">⬡ ACCT Command Center</div>
+    <div class="header-sub">Pierce College · Department of Accounting · Tatiana Wetzler, Chair</div>
+  </div>
+  <div class="header-right">
+    <span id="lockBanner" class="lock-banner hidden">🔒 Locked by another user</span>
+    <span id="syncStatus" class="sync-status sync-ok">● local</span>
+    <button class="btn btn-secondary btn-sm" onclick="trySharePointSync()">↑ SP Sync</button>
+  </div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('timeline', this)">Timeline</div>
+  <div class="tab" onclick="switchTab('programs', this)">Program Map</div>
+  <div class="tab" onclick="switchTab('pipelines', this)">Pipelines</div>
+  <div class="tab" onclick="switchTab('roster', this)">Roster</div>
+</div>
+
+<div class="main">
+
+  <!-- DATA BAR (always visible) -->
+  <div class="data-bar">
+    <span class="data-bar-label">💾 Data stored locally. Export JSON to share or back up.</span>
+    <button class="btn btn-secondary btn-sm" onclick="exportJSON()">Export JSON</button>
+    <button class="btn btn-secondary btn-sm" onclick="document.getElementById('importFile').click()">Import JSON</button>
+    <input type="file" id="importFile" accept=".json" class="hidden" onchange="importJSON(event)">
+    <button class="btn btn-secondary btn-sm" onclick="openActionBrief()">📋 Action Brief</button>
+  </div>
+
+  <!-- ═══════════ TIMELINE TAB ═══════════ -->
+  <div id="tab-timeline">
+
+    <!-- Quarter bar -->
+    <div class="card">
+      <div class="card-title">
+        BAS-ACCT Approval Journey
+        <div class="row">
+          <button class="btn btn-primary btn-sm" onclick="openAddTask()">+ Add Task</button>
+          <button class="btn btn-secondary btn-sm" onclick="openMilestone()">🏁 Milestone</button>
+        </div>
+      </div>
+      <div class="qbar" id="qbar"></div>
+      <div class="timeline-stages" id="stageList"></div>
+    </div>
+
+    <!-- Task grid: 3 columns -->
+    <div class="grid3" id="taskBuckets"></div>
+
+    <!-- Coming Due -->
+    <div class="card">
+      <div class="card-title">Coming Due</div>
+      <div id="comingDue"></div>
+    </div>
+
+  </div><!-- end timeline tab -->
+
+  <!-- ═══════════ PROGRAM MAP TAB ═══════════ -->
+  <div id="tab-programs" class="hidden">
+    <div class="card">
+      <div class="card-title">Credential Stackability — Pierce College Accounting</div>
+      <div class="stack-grid" id="stackGrid"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Upper-Division Course Sequence (BAS-ACCT)</div>
+      <div id="courseSeq"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════ PIPELINES TAB ═══════════ -->
+  <div id="tab-pipelines" class="hidden">
+    <div class="row" style="margin-bottom:14px">
+      <button class="btn btn-primary" onclick="openAddPL()">+ Add Contact</button>
+      <button class="btn btn-secondary" onclick="openAddBucket()">+ Add Bucket</button>
+    </div>
+    <div id="plContent"></div>
+  </div>
+
+  <!-- ═══════════ ROSTER TAB ═══════════ -->
+  <div id="tab-roster" class="hidden">
+    <div class="row" style="margin-bottom:14px">
+      <button class="btn btn-primary" onclick="openAddRoster()">+ Add Member</button>
+    </div>
+    <div class="roster-grid" id="rosterGrid"></div>
+  </div>
+
+</div><!-- end main -->
+
+<!-- ═══ MODALS ═══ -->
+
+<!-- Add Task Modal -->
+<div class="modal-overlay hidden" id="modalAddTask">
+  <div class="modal">
+    <div class="modal-title">Add Task</div>
+    <div class="form-group"><label class="form-label">Task</label><input class="form-input" id="tTask" placeholder="Describe the task..."></div>
+    <div class="form-group"><label class="form-label">Bucket</label>
+      <select class="form-select" id="tBucket">
+        <!-- populated dynamically -->
+      </select>
+    </div>
+    <div class="form-group"><label class="form-label">Due Date (optional)</label><input class="form-input" id="tDue" type="date"></div>
+    <div class="form-group"><label class="form-label">Stage</label>
+      <select class="form-select" id="tStage"></select>
+    </div>
+    <div class="form-group"><label class="form-label">Notes</label><textarea class="form-textarea" id="tNotes" placeholder="Optional context..."></textarea></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modalAddTask')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveTask()">Add Task</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Task Modal -->
+<div class="modal-overlay hidden" id="modalEditTask">
+  <div class="modal">
+    <div class="modal-title">Edit Task</div>
+    <input type="hidden" id="etId">
+    <div class="form-group"><label class="form-label">Task</label><input class="form-input" id="etTask"></div>
+    <div class="form-group"><label class="form-label">Bucket</label>
+      <select class="form-select" id="etBucket">
+        <!-- populated dynamically — BUG FIX #2 -->
+      </select>
+    </div>
+    <div class="form-group"><label class="form-label">Due Date</label><input class="form-input" id="etDue" type="date"></div>
+    <div class="form-group"><label class="form-label">Stage</label>
+      <select class="form-select" id="etStage"></select>
+    </div>
+    <div class="form-group"><label class="form-label">Notes</label><textarea class="form-textarea" id="etNotes"></textarea></div>
+    <div class="modal-footer">
+      <button class="btn btn-danger btn-sm" onclick="deleteTask(document.getElementById('etId').value)">Delete</button>
+      <div class="ml-auto row" style="gap:8px">
+        <button class="btn btn-secondary" onclick="closeModal('modalEditTask')">Cancel</button>
+        <button class="btn btn-primary" onclick="saveEditTask()">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Milestone Modal -->
+<div class="modal-overlay hidden" id="modalMilestone">
+  <div class="modal">
+    <div class="modal-title">🏁 Set Milestone</div>
+    <div class="form-group"><label class="form-label">Milestone Label</label><input class="form-input" id="msLabel" value="SBCTC Board Approval — FA2027"></div>
+    <div class="form-group"><label class="form-label">Target Date</label><input class="form-input" id="msDate" type="date"></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modalMilestone')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveMilestone()">Set</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Bucket Modal -->
+<div class="modal-overlay hidden" id="modalAddBucket">
+  <div class="modal">
+    <div class="modal-title">Add Pipeline Bucket</div>
+    <div class="form-group"><label class="form-label">Bucket Name</label><input class="form-input" id="bName" placeholder="e.g. SBCTC Reviewers"></div>
+    <div class="form-group"><label class="form-label">Section</label>
+      <select class="form-select" id="bSection">
+        <option value="internal">Internal to Pierce</option>
+        <option value="external">External to Pierce</option>
+      </select>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modalAddBucket')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveBucket()">Add</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Contact Modal -->
+<div class="modal-overlay hidden" id="modalAddPL">
+  <div class="modal">
+    <div class="modal-title">Add Contact</div>
+    <div class="form-group"><label class="form-label">Name</label><input class="form-input" id="plName" placeholder="Full name"></div>
+    <div class="form-group"><label class="form-label">Role / Title</label><input class="form-input" id="plRole" placeholder="Title or relationship"></div>
+    <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="plEmail" placeholder="email@pierce.ctc.edu"></div>
+    <div class="form-group"><label class="form-label">Status</label>
+      <select class="form-select" id="plStatus">
+        <option value="waiting">Waiting</option>
+        <option value="active">Active</option>
+        <option value="blocked">Blocked</option>
+      </select>
+    </div>
+    <div class="form-group"><label class="form-label">Pipeline Bucket</label>
+      <select class="form-select" id="plCat">
+        <!-- BUG FIX #1: populated on modal open -->
+      </select>
+    </div>
+    <div class="form-group"><label class="form-label">Notes</label><textarea class="form-textarea" id="plNotes" placeholder="Optional..."></textarea></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modalAddPL')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveContact()">Add</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Roster Modal -->
+<div class="modal-overlay hidden" id="modalAddRoster">
+  <div class="modal">
+    <div class="modal-title">Add Team Member</div>
+    <div class="form-group"><label class="form-label">Name</label><input class="form-input" id="rName"></div>
+    <div class="form-group"><label class="form-label">Role</label><input class="form-input" id="rRole"></div>
+    <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="rEmail"></div>
+    <div class="form-group"><label class="form-label">Notes</label><textarea class="form-textarea" id="rNotes"></textarea></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modalAddRoster')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveRosterMember()">Add</button>
+    </div>
+  </div>
+</div>
+
+<!-- Action Brief Modal -->
+<div class="modal-overlay hidden" id="modalBrief">
+  <div class="modal" style="max-width:600px">
+    <div class="modal-title">📋 Action Brief Generator</div>
+    <div class="form-group"><label class="form-label">Topic / Focus Area</label><input class="form-input" id="briefFocus" placeholder="e.g. SBCTC submission prep, advisory board outreach..."></div>
+    <button class="btn btn-primary" style="margin-bottom:12px" onclick="generateBrief()">Generate Brief</button>
+    <div class="brief-output" id="briefOutput">Brief will appear here. Copy and paste into Claude to get a drafted document, email, or action plan.</div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modalBrief')">Close</button>
+      <button class="btn btn-green" onclick="copyBrief()">Copy Brief</button>
+    </div>
+  </div>
+</div>
+
+<!-- Course Detail Modal -->
+<div class="modal-overlay hidden" id="modalCourse">
+  <div class="modal">
+    <div class="modal-title" id="courseModalTitle"></div>
+    <div id="courseModalBody" style="font-size:12px; line-height:1.7; color:var(--text2)"></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modalCourse')">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+// DATA MODEL
+// ═══════════════════════════════════════════════
+
+const STORAGE_KEY = 'pierce_acct_cache';
+const SP_TENANT = 'piercecollege-my.sharepoint.com';
+const SP_FOLDER = 'ACCT Command Center';
+const SP_FILE = 'pierce_acct_data.json';
+
+const STAGES = [
+  'Idea / Pre-Proposal',
+  'Internal Department Review',
+  'Curriculum Committee',
+  'Dean Approval',
+  'CAO / VPL Approval',
+  'Board of Trustees',
+  'SBCTC Notice of Intent',
+  'SBCTC Peer Review',
+  'SBCTC Staff Review',
+  'SBCTC Board Presentation',
+  'Approved — Implementation Planning',
+  'Program Launch'
+];
+
+const QUARTER_COLORS = [
+  { label: 'SP25', color: '#2a3a4a' },
+  { label: 'SU25', color: '#2a4a3a' },
+  { label: 'FA25', color: '#3a2a4a' },
+  { label: 'WI26', color: '#4a3a2a' },
+  { label: 'SP26', color: '#2a3a4a' },
+  { label: 'SU26', color: '#2a4a3a' },
+  { label: 'FA26', color: '#3a2a4a' },
+  { label: 'WI27', color: '#4a3a2a' },
+  { label: 'SP27', color: '#2a3a4a' },
+  { label: 'FA27 🏁', color: '#4a3a20' },
+];
+
+const DEFAULT_DATA = {
+  tasks: [
+    { id: 't1', text: 'Update labor market data to 2025/2026 WA ESD projections', bucket: 'BAS Proposal', due: '2026-04-01', stage: 6, notes: 'Replace BLS 2023 data in Appendix C', done: false },
+    { id: 't2', text: 'Verify all URL citations before submission', bucket: 'BAS Proposal', due: '2026-04-15', stage: 6, notes: 'Manual check — test every link', done: false },
+    { id: 't3', text: 'Secure advisory board signed membership forms', bucket: 'Advisory Board', due: '2026-03-31', stage: 5, notes: 'Appendix G requires signed forms', done: false },
+    { id: 't4', text: 'Complete external expert review (Appendix I)', bucket: 'BAS Proposal', due: '2026-05-01', stage: 7, notes: '2-3 external reviewers needed', done: false },
+    { id: 't5', text: 'Integrate all sentence-level edits into final document', bucket: 'BAS Proposal', due: '2026-04-20', stage: 6, notes: 'Language strengthening pass', done: false },
+    { id: 't6', text: 'Submit AAS annual program review', bucket: 'AAS Program', due: '2026-03-20', stage: 1, notes: '', done: false },
+    { id: 't7', text: 'Schedule spring advisory board meeting', bucket: 'Advisory Board', due: '2026-04-10', stage: 4, notes: '', done: false },
+    { id: 't8', text: 'Q3 schedule submission to Dean', bucket: 'Scheduling', due: '2026-03-25', stage: 2, notes: '', done: false },
+  ],
+  buckets: ['BAS Proposal', 'AAS Program', 'Advisory Board', 'Scheduling', 'Faculty'],
+  contacts: [
+    { id: 'c1', name: 'Dean (Business & Social Sciences)', role: 'District Dean', email: '', status: 'active', bucket: 'internal', cat: 'Institutional Leadership', notes: 'BAS proposal sponsor' },
+    { id: 'c2', name: 'SBCTC Program Approval', role: 'State Board Contact', email: '', status: 'waiting', bucket: 'external', cat: 'SBCTC', notes: '' },
+    { id: 'c3', name: 'Everett CC BAS Coordinator', role: 'Peer Institution', email: '', status: 'active', bucket: 'external', cat: 'Peer Institutions', notes: 'Consultation on SBCTC process' },
+  ],
+  plBuckets: {
+    internal: ['Institutional Leadership', 'Curriculum Committee', 'Faculty'],
+    external: ['SBCTC', 'Advisory Board Members', 'Peer Institutions', 'Professional Orgs']
+  },
+  roster: [
+    { id: 'r1', name: 'Tatiana Wetzler', role: 'Department Chair, Accounting', email: 'TWetzler@pierce.ctc.edu', notes: 'BAS-ACCT Project Lead' }
+  ],
+  milestone: { label: 'SBCTC Board Approval — FA2027', date: '2027-09-01' },
+  stageStatuses: { 0: 'done', 1: 'done', 2: 'done', 3: 'done', 4: 'active', 5: 'pending', 6: 'pending', 7: 'pending', 8: 'pending', 9: 'pending', 10: 'pending', 11: 'pending' }
+};
+
+const COURSES = {
+  certs: [
+    { code: 'ACCT 101', name: 'Financial Accounting I', desc: 'Accounting equation, journal entries, financial statements.' },
+    { code: 'ACCT 102', name: 'Financial Accounting II', desc: 'Receivables, inventories, long-term assets, liabilities.' },
+    { code: 'BUS 101', name: 'Intro to Business', desc: 'Business structures, markets, management principles.' },
+  ],
+  bookkeeping: [
+    { code: 'ACCT 110', name: 'Bookkeeping I', desc: 'Payroll, cash management, QuickBooks basics.' },
+    { code: 'ACCT 111', name: 'Bookkeeping II', desc: 'Advanced QuickBooks, bank rec, reporting.' },
+  ],
+  accttech: [
+    { code: 'ACCT 201', name: 'Managerial Accounting', desc: 'Cost-volume-profit, budgeting, variance analysis.' },
+    { code: 'ACCT 210', name: 'Tax Accounting I', desc: 'Individual federal/state income tax preparation.' },
+    { code: 'ACCT 220', name: 'Business Law', desc: 'Contracts, agency, employment, UCC.' },
+  ],
+  aas: [
+    { code: 'ACCT 230', name: 'Accounting Information Systems', desc: 'ERP systems, internal controls, data flows.' },
+    { code: 'ACCT 240', name: 'Tax Accounting II', desc: 'Business entities: partnerships, S corps, C corps.' },
+    { code: 'BUS 250', name: 'Business Communications', desc: 'Professional writing, presentations, stakeholder engagement.' },
+  ],
+  bas: [
+    { code: 'ACCT 301', name: 'Intermediate Financial I', desc: 'Revenue recognition, GAAP deep-dive, complex assets.' },
+    { code: 'ACCT 302', name: 'Intermediate Financial II', desc: 'Leases, pensions, EPS, comprehensive income.' },
+    { code: 'ACCT 310', name: 'Advanced Taxation', desc: 'LLCs, partnerships, sole proprietorships, tax credits.' },
+    { code: 'ACCT 320', name: 'Cost Accounting', desc: 'Job costing, process costing, standard costs, ABC.' },
+    { code: 'ACCT 410', name: 'Governmental Accounting', desc: 'GASB standards, fund accounting, public sector reporting.' },
+    { code: 'ACCT 420', name: 'Audit & Assurance', desc: 'GAAS, risk assessment, internal controls, audit reports.' },
+    { code: 'ACCT 450', name: 'Advanced Topics', desc: 'Consolidations, derivatives, foreign currency, emerging issues.' },
+    { code: 'ACCT 490', name: 'Capstone', desc: 'Applied analysis project integrating all program PLOs.' },
+  ]
+};
+
+// ═══════════════════════════════════════════════
+// STATE & PERSISTENCE
+// ═══════════════════════════════════════════════
+
+let data = JSON.parse(JSON.stringify(DEFAULT_DATA));
+
+function loadData() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) data = JSON.parse(saved);
+  } catch(e) { console.warn('Load failed', e); }
+}
+
+function saveData() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    setSyncStatus('ok');
+  } catch(e) { setSyncStatus('error'); }
+}
+
+function setSyncStatus(state) {
+  const el = document.getElementById('syncStatus');
+  el.className = 'sync-status';
+  if (state === 'ok') { el.classList.add('sync-ok'); el.textContent = '● local'; }
+  else if (state === 'saving') { el.classList.add('sync-saving'); el.textContent = '↑ saving...'; }
+  else { el.classList.add('sync-error'); el.textContent = '✕ error'; }
+}
+
+// ═══════════════════════════════════════════════
+// EXPORT / IMPORT  (BUG FIX #3)
+// ═══════════════════════════════════════════════
+
+function exportJSON() {
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'pierce_acct_data_' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importJSON(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const imported = JSON.parse(e.target.result);
+      data = imported;
+      saveData();
+      renderAll();
+      alert('Data imported successfully.');
+    } catch(err) {
+      alert('Invalid JSON file.');
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+// ═══════════════════════════════════════════════
+// SHAREPOINT SYNC (optional, graceful fail)
+// ═══════════════════════════════════════════════
+
+async function trySharePointSync() {
+  setSyncStatus('saving');
+  try {
+    const getUrl = `https://${SP_TENANT}/_api/v2.0/drive/root:/${SP_FOLDER}/${SP_FILE}:/content`;
+    const res = await fetch(getUrl, { credentials: 'include' });
+    if (res.ok) {
+      const remote = await res.json();
+      // Simple last-write-wins for now
+      const putUrl = `https://${SP_TENANT}/_api/v2.0/drive/root:/${SP_FOLDER}/${SP_FILE}:/content`;
+      await fetch(putUrl, {
+        method: 'PUT',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      setSyncStatus('ok');
+      const el = document.getElementById('syncStatus');
+      el.textContent = '● synced';
+    } else {
+      setSyncStatus('error');
+      alert('SharePoint sync failed. Make sure you\'re signed into OneDrive in this browser first. Until then, use Export/Import JSON to share data.');
+    }
+  } catch(e) {
+    setSyncStatus('error');
+    alert('SharePoint unreachable. Use Export/Import JSON to share data between team members.');
+  }
+}
+
+// ═══════════════════════════════════════════════
+// TABS
+// ═══════════════════════════════════════════════
+
+function switchTab(name, el) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  ['timeline','programs','pipelines','roster'].forEach(t => {
+    document.getElementById('tab-' + t).classList.toggle('hidden', t !== name);
+  });
+}
+
+// ═══════════════════════════════════════════════
+// TIMELINE TAB
+// ═══════════════════════════════════════════════
+
+function renderTimeline() {
+  renderQBar();
+  renderStages();
+  renderTaskBuckets();
+  renderComingDue();
+}
+
+function renderQBar() {
+  const bar = document.getElementById('qbar');
+  bar.innerHTML = QUARTER_COLORS.map(q =>
+    `<div class="qseg" style="flex:1;background:${q.color};color:#b0a898;font-size:9px">${q.label}</div>`
+  ).join('');
+}
+
+function renderStages() {
+  const list = document.getElementById('stageList');
+  list.innerHTML = STAGES.map((s, i) => {
+    const st = data.stageStatuses[i] || 'pending';
+    const labels = { pending: 'PENDING', active: 'IN PROGRESS', done: 'DONE', blocked: 'BLOCKED' };
+    return `<div class="stage ${st === 'active' ? 'active-stage' : ''} ${st === 'done' ? 'complete' : ''}"
+      onclick="cycleStage(${i})">
+      <span class="stage-num">${String(i+1).padStart(2,'0')}</span>
+      <span class="stage-name">${s}</span>
+      <span class="stage-status s-${st}">${labels[st]}</span>
+    </div>`;
+  }).join('');
+}
+
+function cycleStage(i) {
+  const order = ['pending','active','done','blocked'];
+  const cur = data.stageStatuses[i] || 'pending';
+  const next = order[(order.indexOf(cur) + 1) % order.length];
+  data.stageStatuses[i] = next;
+  saveData();
+  renderStages();
+}
+
+function renderTaskBuckets() {
+  const container = document.getElementById('taskBuckets');
+  container.innerHTML = data.buckets.map(b => {
+    const tasks = data.tasks.filter(t => t.bucket === b);
+    return `<div class="bucket">
+      <div class="bucket-title">
+        <span>${b.toUpperCase()} <span style="color:var(--text3)">(${tasks.length})</span></span>
+        <button class="btn btn-secondary btn-sm" onclick="deleteBucket('${b}')">✕</button>
+      </div>
+      ${tasks.length === 0 ? '<div style="font-size:11px;color:var(--text3);padding:8px 0">No tasks</div>' : ''}
+      ${tasks.map(t => `
+        <div class="task-item">
+          <div class="task-check ${t.done ? 'checked' : ''}" onclick="toggleTask('${t.id}')"></div>
+          <div style="flex:1">
+            <div class="task-text ${t.done ? 'done' : ''}">${t.text}</div>
+            ${t.due ? `<div class="task-meta">📅 ${t.due}${t.stage !== undefined ? ` · Stage ${t.stage+1}` : ''}</div>` : ''}
+            ${t.notes ? `<div class="task-meta" style="font-style:italic">${t.notes}</div>` : ''}
+          </div>
+          <button class="btn btn-secondary btn-sm" onclick="openEditTask('${t.id}')">✎</button>
+        </div>`).join('')}
+    </div>`;
+  }).join('');
+}
+
+function renderComingDue() {
+  const today = new Date();
+  const soon = data.tasks
+    .filter(t => !t.done && t.due)
+    .map(t => ({ ...t, d: new Date(t.due) }))
+    .filter(t => t.d >= today)
+    .sort((a,b) => a.d - b.d)
+    .slice(0, 6);
+  const el = document.getElementById('comingDue');
+  if (soon.length === 0) { el.innerHTML = '<div style="font-size:11px;color:var(--text3)">No upcoming due dates.</div>'; return; }
+  el.innerHTML = soon.map(t =>
+    `<div class="due-item">
+      <div style="font-size:12px">${t.text}</div>
+      <div class="row" style="margin-top:3px">
+        <span class="due-date">${t.due}</span>
+        <span class="due-label" style="margin-left:8px">${t.bucket}</span>
+      </div>
+    </div>`
+  ).join('');
+}
+
+function toggleTask(id) {
+  const t = data.tasks.find(x => x.id === id);
+  if (t) { t.done = !t.done; saveData(); renderTaskBuckets(); renderComingDue(); }
+}
+
+function deleteBucket(name) {
+  if (!confirm(`Remove bucket "${name}"? Tasks in it will be moved to the first bucket.`)) return;
+  data.tasks.forEach(t => { if (t.bucket === name) t.bucket = data.buckets[0] || 'General'; });
+  data.buckets = data.buckets.filter(b => b !== name);
+  saveData(); renderAll();
+}
+
+function deleteTask(id) {
+  data.tasks = data.tasks.filter(t => t.id !== id);
+  saveData(); closeModal('modalEditTask'); renderAll();
+}
+
+// ═══════════════════════════════════════════════
+// POPULATE SELECTS (shared helper — fixes BUG #1 and #2)
+// ═══════════════════════════════════════════════
+
+function populateBucketSelect(selectId) {
+  const sel = document.getElementById(selectId);
+  if (!sel) return;
+  sel.innerHTML = data.buckets.map(b => `<option value="${b}">${b}</option>`).join('');
+}
+
+function populateStageSelect(selectId, currentStage) {
+  const sel = document.getElementById(selectId);
+  if (!sel) return;
+  sel.innerHTML = STAGES.map((s, i) =>
+    `<option value="${i}" ${i === currentStage ? 'selected' : ''}>${i+1}. ${s}</option>`
+  ).join('');
+}
+
+// ═══════════════════════════════════════════════
+// ADD / EDIT TASK MODALS
+// ═══════════════════════════════════════════════
+
+function openAddTask() {
+  populateBucketSelect('tBucket');    // BUG FIX #1 pattern applied here too
+  populateStageSelect('tStage', 4);
+  document.getElementById('tTask').value = '';
+  document.getElementById('tDue').value = '';
+  document.getElementById('tNotes').value = '';
+  openModal('modalAddTask');
+}
+
+function saveTask() {
+  const text = document.getElementById('tTask').value.trim();
+  if (!text) return;
+  data.tasks.push({
+    id: 't' + Date.now(),
+    text,
+    bucket: document.getElementById('tBucket').value,
+    due: document.getElementById('tDue').value,
+    stage: parseInt(document.getElementById('tStage').value),
+    notes: document.getElementById('tNotes').value.trim(),
+    done: false
+  });
+  saveData(); closeModal('modalAddTask'); renderAll();
+}
+
+function openEditTask(id) {
+  const t = data.tasks.find(x => x.id === id);
+  if (!t) return;
+  document.getElementById('etId').value = id;
+  document.getElementById('etTask').value = t.text;
+  document.getElementById('etDue').value = t.due || '';
+  document.getElementById('etNotes').value = t.notes || '';
+  populateBucketSelect('etBucket');   // BUG FIX #2: bucket field now populated
+  document.getElementById('etBucket').value = t.bucket;
+  populateStageSelect('etStage', t.stage || 0);
+  openModal('modalEditTask');
+}
+
+function saveEditTask() {
+  const id = document.getElementById('etId').value;
+  const t = data.tasks.find(x => x.id === id);
+  if (!t) return;
+  t.text = document.getElementById('etTask').value.trim();
+  t.bucket = document.getElementById('etBucket').value;
+  t.due = document.getElementById('etDue').value;
+  t.stage = parseInt(document.getElementById('etStage').value);
+  t.notes = document.getElementById('etNotes').value.trim();
+  saveData(); closeModal('modalEditTask'); renderAll();
+}
+
+function openMilestone() {
+  document.getElementById('msLabel').value = data.milestone.label;
+  document.getElementById('msDate').value = data.milestone.date;
+  openModal('modalMilestone');
+}
+
+function saveMilestone() {
+  data.milestone.label = document.getElementById('msLabel').value;
+  data.milestone.date = document.getElementById('msDate').value;
+  saveData(); closeModal('modalMilestone');
+}
+
+// ═══════════════════════════════════════════════
+// PROGRAM MAP TAB
+// ═══════════════════════════════════════════════
+
+function renderPrograms() {
+  const cols = [
+    { title: 'Office Asst. Cert', cls: 'cred-cert', courses: COURSES.certs },
+    { title: 'Bookkeeping Cert', cls: 'cred-cert', courses: COURSES.bookkeeping },
+    { title: 'Acct Tech Cert', cls: 'cred-cert', courses: COURSES.accttech },
+    { title: 'AAS — Accounting', cls: 'cred-aas', courses: COURSES.aas },
+    { title: 'BAS-ACCT ✦', cls: 'cred-bas', courses: COURSES.bas },
+  ];
+  document.getElementById('stackGrid').innerHTML = cols.map(c =>
+    `<div class="cred-col">
+      <div class="cred-title ${c.cls}">${c.title}</div>
+      ${c.courses.map(x => `<div class="course-chip" onclick="showCourse('${x.code}','${x.name}','${x.desc}')">${x.code}<br><span style="font-size:10px;color:var(--text3)">${x.name}</span></div>`).join('')}
+    </div>`
+  ).join('');
+
+  document.getElementById('courseSeq').innerHTML = `
+    <div style="display:flex;flex-wrap:wrap;gap:8px">
+      ${COURSES.bas.map((c,i) => `
+        <div style="background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:8px 12px;min-width:160px;flex:1">
+          <div style="font-size:10px;color:var(--accent3)">${['FA','WI','SP','SP','FA','WI','SP','FA'][i] || 'TBD'} Year ${[1,1,2,2,2,3,3,3][i]||3}</div>
+          <div style="font-size:12px;font-weight:500;margin-top:3px">${c.code}</div>
+          <div style="font-size:11px;color:var(--text3)">${c.name}</div>
+        </div>`).join('')}
+    </div>`;
+}
+
+function showCourse(code, name, desc) {
+  document.getElementById('courseModalTitle').textContent = `${code}: ${name}`;
+  document.getElementById('courseModalBody').textContent = desc;
+  openModal('modalCourse');
+}
+
+// ═══════════════════════════════════════════════
+// PIPELINES TAB
+// ═══════════════════════════════════════════════
+
+function renderPipelines() {
+  const sections = ['internal', 'external'];
+  const labels = { internal: 'INTERNAL TO PIERCE', external: 'EXTERNAL TO PIERCE' };
+  document.getElementById('plContent').innerHTML = sections.map(sec => {
+    const buckets = data.plBuckets[sec] || [];
+    return `<div class="pl-section">
+      <div class="pl-section-title">${labels[sec]}</div>
+      <div class="pl-buckets">
+        ${buckets.map(b => {
+          const contacts = data.contacts.filter(c => c.bucket === sec && c.cat === b);
+          return `<div class="pl-bucket">
+            <div class="pl-bucket-header">
+              <span class="pl-bucket-name">${b}</span>
+              <button class="btn btn-danger btn-sm" onclick="removePlBucket('${sec}','${b}')">✕</button>
+            </div>
+            ${contacts.map(c => `
+              <div class="contact-item">
+                <div class="contact-name">${c.name}</div>
+                <div class="contact-role">${c.role}</div>
+                ${c.email ? `<div class="contact-role">${c.email}</div>` : ''}
+                <span class="contact-status cs-${c.status}">${c.status}</span>
+                ${c.notes ? `<div style="font-size:10px;color:var(--text3);margin-top:3px;font-style:italic">${c.notes}</div>` : ''}
+              </div>`).join('')}
+            ${contacts.length === 0 ? '<div style="font-size:10px;color:var(--text3);padding:4px 0">Empty</div>' : ''}
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openAddBucket() {
+  document.getElementById('bName').value = '';
+  openModal('modalAddBucket');
+}
+
+function saveBucket() {
+  const name = document.getElementById('bName').value.trim();
+  const sec = document.getElementById('bSection').value;
+  if (!name) return;
+  if (!data.plBuckets[sec]) data.plBuckets[sec] = [];
+  data.plBuckets[sec].push(name);
+  saveData(); closeModal('modalAddBucket'); renderPipelines();
+}
+
+function removePlBucket(sec, name) {
+  if (!confirm(`Remove bucket "${name}"?`)) return;
+  data.plBuckets[sec] = (data.plBuckets[sec] || []).filter(b => b !== name);
+  data.contacts = data.contacts.filter(c => !(c.bucket === sec && c.cat === name));
+  saveData(); renderPipelines();
+}
+
+function openAddPL() {
+  // BUG FIX #1: populate bucket select on modal open
+  const allBuckets = [
+    ...( data.plBuckets.internal || [] ).map(b => ({ label: `[Internal] ${b}`, sec: 'internal', cat: b })),
+    ...( data.plBuckets.external || [] ).map(b => ({ label: `[External] ${b}`, sec: 'external', cat: b }))
+  ];
+  const sel = document.getElementById('plCat');
+  sel.innerHTML = allBuckets.map(b =>
+    `<option value="${b.sec}||${b.cat}">${b.label}</option>`
+  ).join('');
+  document.getElementById('plName').value = '';
+  document.getElementById('plRole').value = '';
+  document.getElementById('plEmail').value = '';
+  document.getElementById('plNotes').value = '';
+  document.getElementById('plStatus').value = 'waiting';
+  openModal('modalAddPL');
+}
+
+function saveContact() {
+  const name = document.getElementById('plName').value.trim();
+  if (!name) return;
+  const val = document.getElementById('plCat').value;
+  const [sec, cat] = val.split('||');
+  data.contacts.push({
+    id: 'c' + Date.now(),
+    name,
+    role: document.getElementById('plRole').value.trim(),
+    email: document.getElementById('plEmail').value.trim(),
+    status: document.getElementById('plStatus').value,
+    bucket: sec,
+    cat: cat,
+    notes: document.getElementById('plNotes').value.trim()
+  });
+  saveData(); closeModal('modalAddPL'); renderPipelines();
+}
+
+// ═══════════════════════════════════════════════
+// ROSTER TAB
+// ═══════════════════════════════════════════════
+
+function renderRoster() {
+  document.getElementById('rosterGrid').innerHTML = data.roster.map(r =>
+    `<div class="roster-card">
+      <div class="roster-name">${r.name}</div>
+      <div class="roster-role">${r.role}</div>
+      ${r.email ? `<div class="roster-email">${r.email}</div>` : ''}
+      ${r.notes ? `<div style="font-size:10px;color:var(--text3);margin-top:6px">${r.notes}</div>` : ''}
+      <div style="margin-top:8px">
+        <button class="btn btn-danger btn-sm" onclick="deleteRosterMember('${r.id}')">Remove</button>
+      </div>
+    </div>`
+  ).join('');
+}
+
+function openAddRoster() {
+  document.getElementById('rName').value = '';
+  document.getElementById('rRole').value = '';
+  document.getElementById('rEmail').value = '';
+  document.getElementById('rNotes').value = '';
+  openModal('modalAddRoster');
+}
+
+function saveRosterMember() {
+  const name = document.getElementById('rName').value.trim();
+  if (!name) return;
+  data.roster.push({
+    id: 'r' + Date.now(),
+    name,
+    role: document.getElementById('rRole').value.trim(),
+    email: document.getElementById('rEmail').value.trim(),
+    notes: document.getElementById('rNotes').value.trim()
+  });
+  saveData(); closeModal('modalAddRoster'); renderRoster();
+}
+
+function deleteRosterMember(id) {
+  if (!confirm('Remove this team member?')) return;
+  data.roster = data.roster.filter(r => r.id !== id);
+  saveData(); renderRoster();
+}
+
+// ═══════════════════════════════════════════════
+// ACTION BRIEF
+// ═══════════════════════════════════════════════
+
+function openActionBrief() {
+  document.getElementById('briefFocus').value = '';
+  document.getElementById('briefOutput').textContent = 'Brief will appear here. Copy and paste into Claude to get a drafted document, email, or action plan.';
+  openModal('modalBrief');
+}
+
+function generateBrief() {
+  const focus = document.getElementById('briefFocus').value.trim() || 'general program management';
+  const openTasks = data.tasks.filter(t => !t.done).slice(0, 6);
+  const upcoming = data.tasks.filter(t => !t.done && t.due).sort((a,b) => a.due.localeCompare(b.due)).slice(0,3);
+  const activeStages = Object.entries(data.stageStatuses).filter(([,v]) => v === 'active').map(([k]) => STAGES[k]);
+
+  const brief = `PIERCE COLLEGE — ACCT DEPARTMENT ACTION BRIEF
+Generated: ${new Date().toLocaleDateString()}
+Focus: ${focus}
+Milestone: ${data.milestone.label} (${data.milestone.date})
+
+ACTIVE APPROVAL STAGES:
+${activeStages.length ? activeStages.map(s => `  • ${s}`).join('\n') : '  (none active)'}
+
+OPEN TASKS (top ${openTasks.length}):
+${openTasks.map(t => `  • [${t.bucket}] ${t.text}${t.due ? ' — due ' + t.due : ''}`).join('\n')}
+
+NEAREST DUE DATES:
+${upcoming.map(t => `  • ${t.due}: ${t.text}`).join('\n')}
+
+CONTEXT: BAS-ACCT proposal for SBCTC approval. Pierce College, Lakewood WA.
+AAS in Accounting program continues in parallel.
+
+---
+INSTRUCTIONS FOR CLAUDE:
+Using this brief, please help me with: ${focus}`;
+
+  document.getElementById('briefOutput').textContent = brief;
+}
+
+function copyBrief() {
+  const text = document.getElementById('briefOutput').textContent;
+  navigator.clipboard.writeText(text).then(() => alert('Brief copied to clipboard.'));
+}
+
+// ═══════════════════════════════════════════════
+// MODAL HELPERS
+// ═══════════════════════════════════════════════
+
+function openModal(id) {
+  document.getElementById(id).classList.remove('hidden');
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.add('hidden');
+}
+
+// Close on overlay click
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', function(e) {
+    if (e.target === this) this.classList.add('hidden');
+  });
+});
+
+// ═══════════════════════════════════════════════
+// RENDER ALL
+// ═══════════════════════════════════════════════
+
+function renderAll() {
+  renderTimeline();
+  renderPrograms();
+  renderPipelines();
+  renderRoster();
+}
+
+// ═══════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════
+
+loadData();
+renderAll();
+</script>
+</body>
+</html>
